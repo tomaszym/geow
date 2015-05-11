@@ -3,6 +3,7 @@
 
 *.osm
 *.osm.bz2
+*.geojson
 
 # sbt specific
 .cache/

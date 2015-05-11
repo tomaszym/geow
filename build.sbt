@@ -2,7 +2,7 @@ name := """api"""
 
 organization := "org.geow"
 
-version := "0.2"
+version := "0.3-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 
@@ -16,6 +16,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-ws" % "2.4.0-M2",
   "com.typesafe.play.extras" %% "play-geojson" % "1.2.0",
+  "org.json4s" %% "json4s-native" % "3.2.11",
   "org.scala-lang" %% "scala-pickling" % "0.9.1",
   "org.apache.commons" % "commons-compress" % "1.8.1",
   "org.scala-lang" % "scala-xml" % "2.11.0-M4",

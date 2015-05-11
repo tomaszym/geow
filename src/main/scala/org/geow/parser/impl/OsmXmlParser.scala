@@ -12,7 +12,7 @@ import scala.io.Codec
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream
 import java.io.FileInputStream
 import scala.xml.NodeSeq.seqToNodeSeq
-import org.geow.parser.OsmParser
+import org.geow.parser.{OsmDenormalizedParser, OsmParser}
 
 case class OsmXmlParser(source: Source) extends OsmParser {
 
