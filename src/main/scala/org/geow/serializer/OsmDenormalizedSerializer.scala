@@ -12,4 +12,9 @@ object OsmDenormalizedSerializer {
 
   def toBinary(decoded: OsmDenormalizedObject): Array[Byte] = decoded.pickle.value
 
+  def fromGeoJson(geojson: String):List[OsmDenormalizedObject] =
+    GeoJsonSerialiser
+      .featureCollectionFromJSON(geojson)
+      .map(OsmDenormalisedGeoJSONBijections.geoJsonToDenormalized)
+      .getOrElse(Nil)
 }
