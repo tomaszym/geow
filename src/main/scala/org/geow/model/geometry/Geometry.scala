@@ -2,69 +2,38 @@ package org.geow.model.geometry
 
 import org.geow.geohash.{GeoHash, PrecisionUltraHigh_1MM}
 import org.geow.model.{OsmId, OsmRole, OsmType}
-import play.api.libs.json.Json
-import play.extras.geojson.{Geometry => JsonGeometry, GeometryCollection => JsonGeometryCollection, LatLng => JsonLatLng, LineString => JsonLineString, Point => JsonPoint}
+import org.geow.serializer.GeoJsonSerialiser
 
-sealed trait Geometry {
 
-  def toGeoJson(): String
+sealed trait Geometry { override def toString = GeoJsonSerialiser.jsonFromGeometry(this) }
 
-  private[model] def toGeoJsonImpl:JsonGeometry[JsonLatLng]
-}
+sealed trait Point extends Geometry
+final case class HashPoint(hash:Long) extends Point
+final case class LonLatPoint(lon:Double, lat:Double) extends Point
+final case class MultiPoint(coordinates:List[Point]) extends Geometry
+final case class LineString(coordinates:List[Point]) extends Geometry
+final case class MultiLineString(coordinates:List[List[Point]]) extends Geometry
+final case class Polygon(coordinates:List[List[Point]]) extends Geometry
+final case class MultiPolygon(coordinates:List[List[List[Point]]]) extends Geometry
+final case class GeometryCollection(geometries:List[Geometry]) extends Geometry
 
-case class Point(hash:Long) extends Geometry {
+final case class Feature(geometry:Geometry, properties:Map[String, String])
 
-  import Point._
+final case class FeatureCollection(features:List[Feature])
 
-  def lon = hashCreator.decodeParallel(hash)._1
-
-  def lat = hashCreator.decodeParallel(hash)._2
-
-  override def toString = toGeoJson()
-
-  override def toGeoJson():String = {
-    Json.toJson(toGeoJsonImpl).toString
-  }
-
-  override def toGeoJsonImpl: JsonPoint[JsonLatLng] = {
-    val (lon,lat) = hashCreator.decodeParallel(hash)
-    JsonPoint(JsonLatLng(lat, lon))
-  }
-}
-
+//Points are special.
 object Point {
+  def apply(lon:Double, lat:Double) = LonLatPoint(lon, lat)
+  def apply(hash:Long) = HashPoint(hash)
 
-  lazy val hashCreator = GeoHash(PrecisionUltraHigh_1MM)
+  lazy val hashCoder = GeoHash(PrecisionUltraHigh_1MM)
 
-  def apply(lon: Double, lat: Double) = new Point(hashCreator.encodeParallel(lon,lat))
+  implicit def hashPointToLonLatPoint(hashPoint: HashPoint):LonLatPoint = {
+    val (lon, lat) = hashCoder.decodeParallel(hashPoint.hash)
+    LonLatPoint(lon, lat)
+  }
 
+  implicit def lonLatPointToHashPoint(lonLatPoint: LonLatPoint):HashPoint =
+    HashPoint(hashCoder.encodeParallel(lonLatPoint.lon, lonLatPoint.lat))
 }
 
-case class Linestring(points: List[Point]) extends Geometry {
-
-  override def toString = toGeoJson()
-
-  override def toGeoJson():String = {
-    Json.toJson(toGeoJsonImpl).toString
-  }
-
-  override def toGeoJsonImpl: JsonLineString[JsonLatLng] = {
-    JsonLineString(for (point <- points) yield JsonLatLng(point.lat, point.lon))
-  }
-}
-
-case class GeometryMember(typ: OsmType, ref: OsmId, role: OsmRole, geometry: Geometry)
-
-case class GeometryCollection(members: List[GeometryMember]) extends Geometry {
-
-  override def toString = toGeoJson()
-
-  override def toGeoJson(): String= {
-    Json.toJson(toGeoJsonImpl).toString
-  }
-
-  override def toGeoJsonImpl: JsonGeometry[JsonLatLng] = {
-    val features: List[JsonGeometry[JsonLatLng]] = for (member <- members) yield member.geometry.toGeoJsonImpl
-    JsonGeometryCollection(features, None)
-  }
-}

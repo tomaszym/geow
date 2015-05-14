@@ -34,8 +34,8 @@ case class OsmGeoJSONParser(json: JsValue) extends OsmDenormalizedParser {
         val denormalizedNode: OsmDenormalizedNode = OsmDenormalizedNode(id = OsmId(0), tags = tags, geometry = point)
         Some(denormalizedNode)
 
-      case Some(linestring: Linestring) =>
-        val denormalizedWay = OsmDenormalizedWay(id = OsmId(0), tags = tags, geometry = linestring)
+      case Some(LineString: LineString) =>
+        val denormalizedWay = OsmDenormalizedWay(id = OsmId(0), tags = tags, geometry = LineString)
         Some(denormalizedWay)
 
       case Some(collection: GeometryCollection) =>
@@ -55,8 +55,8 @@ case class OsmGeoJSONParser(json: JsValue) extends OsmDenormalizedParser {
 
     case jsonLineString: JsonLineString[LatLng] =>
       val coordinates = jsonLineString.coordinates.map(extractPoint).toList
-      val linestring = Linestring(coordinates)
-      Some(linestring)
+      val LineString = LineString(coordinates)
+      Some(LineString)
 
     case jsonGeometries: JsonGeometryCollection[LatLng] =>
       val membersTry: Seq[Option[GeometryMember]] = jsonGeometries.geometries.map(jsonGeometry => extractGeometry(jsonGeometry).map(toGeometryMember))
@@ -66,7 +66,7 @@ case class OsmGeoJSONParser(json: JsValue) extends OsmDenormalizedParser {
     case jsonPolygon: JsonPolygon[LatLng] =>
       val lines = jsonPolygon.coordinates.map((coords: Seq[LatLng]) => {
         val points = coords.map(extractPoint).toList
-        Linestring(points)
+        LineString(points)
       })
       val members = lines.map(line => GeometryMember(OsmTypeWay,OsmId(0),OsmRoleEmpty,line)).toList
       val collection = GeometryCollection(members)
@@ -79,7 +79,7 @@ case class OsmGeoJSONParser(json: JsValue) extends OsmDenormalizedParser {
   def toGeometryMember(geometry: Geometry): GeometryMember = {
     val osmType: OsmType = geometry match {
       case point: Point => OsmTypeNode
-      case linestring: Linestring => OsmTypeWay
+      case LineString: LineString => OsmTypeWay
       case collection: GeometryCollection => OsmTypeRelation
     }
 

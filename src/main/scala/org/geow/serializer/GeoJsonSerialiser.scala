@@ -1,7 +1,7 @@
 package org.geow.serializer
 
 import argonaut._, Argonaut._, Shapeless._
-import org.geow.geojson._
+import org.geow.model.geometry._
 
 /**
  * Created by mark on 12.05.15.
@@ -9,10 +9,13 @@ import org.geow.geojson._
 object GeoJsonSerialiser {
 
   private implicit def pointDecode: DecodeJson[Point] =
-    jdecode1L(Point.apply)("coordinates")
+    DecodeJson( c ⇒ for { lonLat ← (c --\ "coordinates").as[(Double, Double)]} yield LonLatPoint(lonLat._1, lonLat._2))
 
-  private implicit def pointEncode: EncodeJson[Point] =
-    EncodeJson((p:Point) ⇒ ("coordinates" := p.coordinates) ->: ("type" := "Point") ->: jEmptyObject)
+  private implicit def lonLatPointEncode: EncodeJson[LonLatPoint] =
+    EncodeJson((p:LonLatPoint) ⇒ ("coordinates" := (p.lon, p.lat)) ->: ("type" := "Point") ->: jEmptyObject)
+
+  private implicit def hashPointEncode: EncodeJson[HashPoint] =
+    EncodeJson((p:HashPoint) ⇒ ("coordinates" := (p.lon, p.lat)) ->: ("type" := "Point") ->: jEmptyObject)
 
   private implicit def multiPointDecode: DecodeJson[MultiPoint] =
     jdecode1L(MultiPoint.apply)("coordinates")
@@ -81,9 +84,9 @@ object GeoJsonSerialiser {
 
   def geometryFromJSON(json:String)  = json.decodeOption[Geometry]
   def jsonFromGeometry(geometry:Geometry) = geometry.asJson.nospaces
+  def jsonFromFeature(feature:Feature) = feature.asJson.nospaces
   def featureFromJSON(json:String) = json.decodeOption[Feature]
   def featureCollectionFromJSONEither(json:String) = json.decodeEither[FeatureCollection]
   def featureCollectionFromJSON(json:String):Option[FeatureCollection] = json.decodeOption[FeatureCollection]
-//  def featureToJSON[A](f:Feature[A]):String =
 
 }
