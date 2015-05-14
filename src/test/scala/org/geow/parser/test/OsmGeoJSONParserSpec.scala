@@ -10,14 +10,26 @@ import org.specs2.runner._
 class OsmGeoJSONParserSpec extends Specification with ScalaCheck {
 
 
-  val parser = OsmDenormalizedParser("src/test/resources/ways.geojson")
+  val linestrings = OsmDenormalizedParser("src/test/resources/ways.geojson")
+  val multiPolygons = OsmDenormalizedParser("src/test/resources/districts.muehlheim.geojson")
 
-  "The OsmObjectParser" should {
+  "The OsmDenormalizedParser" should {
 
-    "parse an Osm xml" in {
+    "parse a geojson with linestrings" in {
 
-      for(elem <- parser) println(elem)
-      true must beTrue
+      val elements = (for(elem <- linestrings) yield elem).toList
+      for(elem <- elements) println(elem)
+
+      elements must have size(82)
+    }
+
+    "parse a geojson with multi-polygons" in {
+
+      val elements = (for(elem <- multiPolygons) yield elem).toList
+
+      for(elem <- elements) println(elem)
+
+      elements must have size(19)
     }
   }
 
