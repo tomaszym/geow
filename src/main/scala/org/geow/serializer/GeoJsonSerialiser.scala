@@ -11,11 +11,13 @@ object GeoJsonSerialiser {
   private implicit def pointDecode: DecodeJson[Point] =
     DecodeJson( c ⇒ for { lonLat ← (c --\ "coordinates").as[(Double, Double)]} yield LonLatPoint(lonLat._1, lonLat._2))
 
-  private implicit def lonLatPointEncode: EncodeJson[LonLatPoint] =
-    EncodeJson((p:LonLatPoint) ⇒ ("coordinates" := (p.lon, p.lat)) ->: ("type" := "Point") ->: jEmptyObject)
+  def coordinatesFromPoint(p:Point) = p match {
+    case p:LonLatPoint ⇒ (p.lon, p.lat)
+    case p:HashPoint ⇒ (p.lon, p.lat)
+  }
 
-  private implicit def hashPointEncode: EncodeJson[HashPoint] =
-    EncodeJson((p:HashPoint) ⇒ ("coordinates" := (p.lon, p.lat)) ->: ("type" := "Point") ->: jEmptyObject)
+  private implicit def pointEncode: EncodeJson[Point] =
+    EncodeJson((p:Point) ⇒ ("coordinates" := coordinatesFromPoint(p)) ->: ("type" := "Point") ->: jEmptyObject)
 
   private implicit def multiPointDecode: DecodeJson[MultiPoint] =
     jdecode1L(MultiPoint.apply)("coordinates")
@@ -77,8 +79,15 @@ object GeoJsonSerialiser {
     }
     )
 
-  implicitly[EncodeJson[Feature]]
-  implicitly[DecodeJson[Feature]]
+  private implicit def featureEncode:EncodeJson[Feature] =
+    EncodeJson((f:Feature) ⇒ ("properties" := f.properties) ->: ("geometry" := f.geometry) ->: ("type" := "Feature") ->: jEmptyObject)
+
+  private implicit def featureDecode:DecodeJson[Feature] =
+    DecodeJson( c ⇒ for {
+      geometry ← (c --\ "geometry").as[Geometry]
+      properties ← (c --\ "properties").as[Option[Map[String, Json]]]
+    } yield Feature(geometry, properties.map(_.mapValues(_.toString())).getOrElse(Map())))
+
   implicitly[EncodeJson[FeatureCollection]]
   implicitly[DecodeJson[FeatureCollection]]
 

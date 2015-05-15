@@ -16,6 +16,9 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-ws" % "2.4.0-M2",
   "com.typesafe.play.extras" %% "play-geojson" % "1.2.0",
+  "org.scalaz.stream" %% "scalaz-stream" % "0.7a",
+  "org.scalaz" %% "scalaz-core" % "7.1.2",
+  "org.scalaz" %% "scalaz-concurrent" % "7.1.2",
   "com.github.alexarchambault" %% "argonaut-shapeless_6.1" % "0.1.1",
   "org.json4s" %% "json4s-native" % "3.2.11",
   "org.scala-lang" %% "scala-pickling" % "0.9.1",

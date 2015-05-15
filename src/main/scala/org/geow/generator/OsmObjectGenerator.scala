@@ -73,10 +73,10 @@ case class OsmObjectGenerator() {
   def generateOsmRole: OsmRole = {
     oneOf(OsmRoleEmpty, OsmRoleInner, OsmRoleOuter)
   }
-
-  def generateLinestring: LineString = {
-    LineString(generatePointList())
-  }
+//
+//  def generateLinestring: LineString = {
+//    LineString(generatePointList())
+//  }
 
 //  def generateGeometryMember: GeometryMember = {
 //    val typ = generateOsmType
@@ -127,14 +127,14 @@ case class OsmObjectGenerator() {
     OsmDenormalizedNode(id, user, version, tags, point)
   }
 
-  def generateDenormalizedWay: OsmDenormalizedWay = {
-    val id = generateOsmId
-    val user = generateUser
-    val version = generateVersion
-    val tags = generateTags()
-    val geometryWay = generateLinestring
-    OsmDenormalizedWay(id, user, version, tags, geometryWay)
-  }
+//  def generateDenormalizedWay: OsmDenormalizedWay = {
+//    val id = generateOsmId
+//    val user = generateUser
+//    val version = generateVersion
+//    val tags = generateTags()
+//    val geometryWay = generateLinestring
+//    OsmDenormalizedWay(id, user, version, tags, geometryWay)
+//  }
 
 //  def generateDenormalizedRelation: OsmDenormalizedRelation = {
 //    val id = generateOsmId

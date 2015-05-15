@@ -1,7 +1,6 @@
 package org.geow.serializer
 
 import org.geow.model._
-import org.geow.model.geometry._
 
 object OsmDenormalizedSerializer {
 
@@ -12,7 +11,22 @@ object OsmDenormalizedSerializer {
 
   def toBinary(decoded: OsmDenormalizedObject): Array[Byte] = decoded.pickle.value
 
-  def fromGeoJson(geojson: String):List[OsmDenormalizedObject] =
+  def toGeoJsonString(osmDenormalizedObjects:List[OsmDenormalizedObject]):String = {
+    val inner = (for (osm ← osmDenormalizedObjects) yield toGeoJsonString(osm)).mkString(",")
+    s"""
+       |{
+       |  "type": "FeatureCollection",
+       |  "features": [$inner]
+       |}
+     """.stripMargin
+  }
+
+  def toGeoJsonString(osmDenormalizedObject:OsmDenormalizedObject):String =
+  GeoJsonSerialiser.jsonFromFeature(
+    OsmDenormalisedGeoJSONBijections.denormalizedToGeoJson(osmDenormalizedObject)
+  )
+
+  def fromGeoJsonString(geojson: String):List[OsmDenormalizedObject] =
     GeoJsonSerialiser
       .featureCollectionFromJSON(geojson)
       .map(OsmDenormalisedGeoJSONBijections.geoJsonToDenormalized)

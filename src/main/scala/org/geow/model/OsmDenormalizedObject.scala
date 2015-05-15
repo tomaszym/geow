@@ -26,6 +26,6 @@ case class OsmDenormalizedNode(id: OsmId, user: Option[OsmUser] = None, version:
 case class OsmDenormalizedWay(id: OsmId, user: Option[OsmUser] = None, version:OsmVersion = OsmVersion(), tags : List[OsmTag], geometry : LineString) extends OsmDenormalizedObject{
   type T = LineString
 }
-case class OsmDenormalizedRelation(id: OsmId, user: Option[OsmUser] = None, version:OsmVersion = OsmVersion(), tags : List[OsmTag], geometry : MultiPolygon) extends OsmDenormalizedObject{
-  type T = MultiPolygon
+case class OsmDenormalizedRelation(id: OsmId, user: Option[OsmUser] = None, version:OsmVersion = OsmVersion(), tags : List[OsmTag], geometry : GeometryCollection) extends OsmDenormalizedObject{
+  type T = GeometryCollection
 }
