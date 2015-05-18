@@ -5,8 +5,9 @@ import java.io.InputStream
 import org.geow.model._
 import org.geow.model.geometry._
 import org.geow.parser.OsmDenormalizedParser
+import org.geow.serializer.GeoJsonSerialiser
 import org.geow.serializer.OsmDenormalisedGeoJSONBijections._
-import argonaut._, Argonaut._, Shapeless._
+import argonaut._, Argonaut._
 import scala.io.Source
 import scala.reflect.io.File
 
@@ -15,11 +16,10 @@ import scala.reflect.io.File
  */
 case class OsmGeoJSONParser(is:InputStream) extends OsmDenormalizedParser {
   import org.geow.serializer.GeoJsonSerialiser._
-  implicitly[DecodeJson[FeatureCollection]]
 
   val json = Source.fromInputStream(is).mkString
 
-  private val iterator = json.decodeOption[FeatureCollection]
+  private val iterator = GeoJsonSerialiser.featureCollectionFromJSON(json)
     .getOrElse(FeatureCollection(Nil))
     .features
     .iterator

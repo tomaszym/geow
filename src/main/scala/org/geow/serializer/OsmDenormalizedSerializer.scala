@@ -12,13 +12,9 @@ object OsmDenormalizedSerializer {
   def toBinary(decoded: OsmDenormalizedObject): Array[Byte] = decoded.pickle.value
 
   def toGeoJsonString(osmDenormalizedObjects:List[OsmDenormalizedObject]):String = {
-    val inner = (for (osm ← osmDenormalizedObjects) yield toGeoJsonString(osm)).mkString(",")
-    s"""
-       |{
-       |  "type": "FeatureCollection",
-       |  "features": [$inner]
-       |}
-     """.stripMargin
+    GeoJsonSerialiser.jsonFromFeatureCollection(
+      OsmDenormalisedGeoJSONBijections.denormalizedToGeoJson(osmDenormalizedObjects)
+    )
   }
 
   def toGeoJsonString(osmDenormalizedObject:OsmDenormalizedObject):String =

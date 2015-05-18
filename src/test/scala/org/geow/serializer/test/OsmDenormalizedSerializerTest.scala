@@ -29,10 +29,10 @@ class OsmDenormalizedSerializerTest extends Specification with ScalaCheck {
   def denormalizedNodeGenerator = Gen.resultOf[Int,OsmDenormalizedNode](t => generator.generateDenormalizedNode)
   implicit def osmDenormalizedNodesArb = Arbitrary { denormalizedNodeGenerator }
   
-  def denormalizedWayGenerator = Gen.resultOf[Int,OsmDenormalizedWay](t => generator.generateDenormalizedWay)
+  def denormalizedWayGenerator = Gen.resultOf[Int, OsmDenormalizedWay](t => generator.generateDenormalizedWay)
   implicit def osmDenormalizedWaysArb = Arbitrary { denormalizedWayGenerator }
   
-  def denormalizedRelationGenerator = Gen.resultOf[Int,OsmDenormalizedRelation](t => generator.generateDenormalizedRelation)
+  def denormalizedRelationGenerator = Gen.resultOf[Int, OsmDenormalizedRelation](t => generator.generateDenormalizedRelation)
   implicit def osmDenormalizedRelationsArb = Arbitrary { denormalizedRelationGenerator }
   
   

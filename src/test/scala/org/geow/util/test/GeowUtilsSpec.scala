@@ -16,7 +16,7 @@ class GeowUtilsSpec extends Specification with ScalaCheck {
 
   "The GeowUtils" should {
 
-    "should denormalize an \"OsmWay\"" in {
+    "denormalize an \"OsmWay\"" in {
 
       val expectedWay = generateWay
       val expectedNds = expectedWay.nds
@@ -34,12 +34,12 @@ class GeowUtilsSpec extends Specification with ScalaCheck {
       val actualVersion = denormalizedWay.version
       val actualTags = denormalizedWay.tags
       val actualGeometry = denormalizedWay.geometry
-      val actualPoints = actualGeometry.points
+      val actualPoints = actualGeometry.coordinates
 
-
-      for (nd <- expectedNds){
+      for (nd <- expectedNds) {
         val expectedPoint = expectedMappings(nd)
-        actualPoints must contain(expectedPoint)
+        val expectedTuple = (expectedPoint.lon, expectedPoint.lat)
+        actualPoints must contain(expectedTuple)
       }
 
       actualTags must containTheSameElementsAs(expectedTags)
@@ -47,7 +47,6 @@ class GeowUtilsSpec extends Specification with ScalaCheck {
       actualUser must be_==(expectedUser)
       actualVersion must be_==(expectedVersion)
     }
-
 
   }
 

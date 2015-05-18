@@ -1,5 +1,6 @@
 package org.geow.generator
 
+import monocle.Lens
 import org.geow.model._
 import org.geow.model.geometry._
 
@@ -65,31 +66,41 @@ case class OsmObjectGenerator() {
     oneOf(OsmTypeNode, OsmTypeWay, OsmTypeRelation)
   }
 
-  def oneOf[T](params: T*): T = {
-    val list = Random.shuffle(params)
-    list(0)
-  }
+  def oneOf[T](params: T*): T = Random.shuffle(params).head
 
   def generateOsmRole: OsmRole = {
     oneOf(OsmRoleEmpty, OsmRoleInner, OsmRoleOuter)
   }
-//
-//  def generateLinestring: LineString = {
-//    LineString(generatePointList())
-//  }
 
-//  def generateGeometryMember: GeometryMember = {
-//    val typ = generateOsmType
-//    val ref = generateOsmId
-//    val role = generateOsmRole
-//    val geoemtry = generateLinestring
-//    GeometryMember(typ, ref, role, geoemtry)
-//  }
+  def generateLinestring: LineString = {
+    LineString(generatePointList().map(p ⇒ (p.lon, p.lat)))
+  }
 
-//  def generateGeometryCollection: GeometryCollection = {
-//    val members = Seq.fill(10)(generateGeometryMember).toList
-//    GeometryCollection(members)
-//  }
+  def generatePolygon: Polygon = {
+    val n = random nextInt 4
+    val lineStrings = for(x ← 1 until n) yield generateLinestring
+    Polygon(lineStrings.toList.map(_.coordinates))
+  }
+
+  def generateMultiPolygon: MultiPolygon = {
+    val n = random nextInt 4
+    val polygons = for(x ← 1 until n) yield generatePolygon
+    MultiPolygon(polygons.toList.map(_.coordinates))
+  }
+
+  def generateGeometry:Geometry = {
+    val possibilities = List( generateMultiPolygon, generateLinestring, generatePoint )
+    val which = random nextInt possibilities.length
+    possibilities(which)
+  }
+
+  def generateGeometryCollection:GeometryCollection = {
+    val pointsN = random.nextInt(4)
+    val lineStringsN = random.nextInt(2)
+    GeometryCollection(
+     List(generateMultiPolygon) ++ List.fill(lineStringsN)(generateLinestring) ++ List.fill(pointsN)(generatePoint)
+    )
+  }
 
   def generateNode: OsmNode = {
     val id = generateOsmId
@@ -127,22 +138,22 @@ case class OsmObjectGenerator() {
     OsmDenormalizedNode(id, user, version, tags, point)
   }
 
-//  def generateDenormalizedWay: OsmDenormalizedWay = {
-//    val id = generateOsmId
-//    val user = generateUser
-//    val version = generateVersion
-//    val tags = generateTags()
-//    val geometryWay = generateLinestring
-//    OsmDenormalizedWay(id, user, version, tags, geometryWay)
-//  }
+  def generateDenormalizedWay: OsmDenormalizedWay = {
+    val id = generateOsmId
+    val user = generateUser
+    val version = generateVersion
+    val tags = generateTags()
+    val geometryWay = generateLinestring
+    OsmDenormalizedWay(id, user, version, tags, geometryWay)
+  }
 
-//  def generateDenormalizedRelation: OsmDenormalizedRelation = {
-//    val id = generateOsmId
-//    val user = generateUser
-//    val version = generateVersion
-//    val tags = generateTags()
-//    val multiPolygon = generateMultiPolygon
-//    OsmDenormalizedRelation(id, user, version, tags, multiPolygon)
-//  }
+  def generateDenormalizedRelation: OsmDenormalizedRelation = {
+    val id = generateOsmId
+    val user = generateUser
+    val version = generateVersion
+    val tags = generateTags()
+    val geometryCollection = generateGeometryCollection
+    OsmDenormalizedRelation(id, user, version, tags, geometryCollection)
+  }
 
 }

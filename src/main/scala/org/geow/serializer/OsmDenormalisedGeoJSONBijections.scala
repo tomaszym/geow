@@ -3,7 +3,7 @@ package org.geow.serializer
 import org.geow.model._
 import org.geow.model.geometry._
 
-import scala.util.Try
+import scala.util.{Random, Try}
 
 /**
  * Created by mark on 13.05.15.
@@ -44,8 +44,9 @@ object OsmDenormalisedGeoJSONBijections {
   }
 
   private def partialOsmObjectFromTags(tags:TagMap):PartialOsmObject = { //TODO: Throw this out, should not be necessary anymore
+    val rand = new Random()
     import OsmPropertyNames._
-    val id:OsmId = OsmId(tags.get(osmId).get.toLong)
+    val id:OsmId = OsmId(tags.get(osmId).map(_.toLong).getOrElse(rand.nextInt(Int.MaxValue)))
     val user:Option[OsmUser] =
       for {
         idS ← tags.get(osmUserId)
@@ -54,13 +55,16 @@ object OsmDenormalisedGeoJSONBijections {
       } yield OsmUser(name, id)
 
     val version:OsmVersion = {
-      val timestamp = tags.get(osmVersionTimestamp).map(_.toLong).get
-      val changeset = tags.get(osmVersionChangeset).map(_.toInt).get
-      val number = tags.get(osmVersionNumber).map(_.toInt).get
-      val versionVisible = tags.get(osmVersionVisible).map(_.toBoolean).get
-      OsmVersion(timestamp, number, changeset, versionVisible)
+      val versionOpt:Option[OsmVersion] = for {
+        timestamp ← tags.get(osmVersionTimestamp).flatMap(t ⇒ Try(t.toLong).toOption)
+        changeset ← tags.get(osmVersionChangeset).flatMap(c ⇒ Try(c.toInt).toOption)
+        number ← tags.get(osmVersionNumber).flatMap(n ⇒ Try(n.toInt).toOption)
+        versionVisible ← tags.get(osmVersionVisible).flatMap(v ⇒ Try(v.toBoolean).toOption)
+      } yield OsmVersion(timestamp, number, changeset, versionVisible)
+     versionOpt.getOrElse( OsmVersion() )
     }
-    val oTags:List[OsmTag] = (tags - osmId - osmUserName -osmUserId - osmVersionTimestamp - osmVersionChangeset - osmVersionNumber).toList.map{
+
+    val oTags:List[OsmTag] = (tags - osmId - osmUserName - osmUserId - osmVersionTimestamp - osmVersionChangeset - osmVersionNumber).toList.map{
       case (k, v) ⇒ OsmTag(k, v)
     }
     PartialOsmObject(id, user, version, oTags)
