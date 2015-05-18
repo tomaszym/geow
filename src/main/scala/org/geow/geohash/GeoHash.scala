@@ -49,6 +49,11 @@ case class GeoHash(val precision: Precision) {
     val rectangle = geohash.getEncapsulatingRectangle(new java.util.ArrayList(javaHashes))
     (rectangle(0), rectangle(1))
   }
+
+  def encapsulatingRectangleHashes(upperLeft : Long, lowerRight : Long): Array[Array[Long]] = {
+    geohash.getEncapsulatingRectangleBoundingBoxes(Array(upperLeft,lowerRight))
+  }
+
 }
 
 object GeoHash{
