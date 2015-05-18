@@ -1,6 +1,5 @@
 package org.geow.parser.test
 
-import org.geow.parser.OsmDenormalizedParser
 import org.geow.parser.impl.{Boundary, OsmGeoJSONBoundaryParser}
 import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification

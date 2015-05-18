@@ -1,6 +1,6 @@
 package org.geow.serializer
 
-import argonaut._, Argonaut._
+import argonaut._, Argonaut._, Shapeless._
 import org.geow.model.geometry._
 
 /**
@@ -16,46 +16,46 @@ object GeoJsonSerialiser {
     case p:HashPoint ⇒ (p.lon, p.lat)
   }
 
-  private implicit def pointEncode: EncodeJson[Point] =
+  implicit def pointEncode: EncodeJson[Point] =
     EncodeJson((p:Point) ⇒ ("coordinates" := coordinatesFromPoint(p)) ->: ("type" := "Point") ->: jEmptyObject)
 
-  private implicit def multiPointDecode: DecodeJson[MultiPoint] =
+  implicit def multiPointDecode: DecodeJson[MultiPoint] =
     jdecode1L(MultiPoint.apply)("coordinates")
 
-  private implicit def multiPointEncode: EncodeJson[MultiPoint] =
+  implicit def multiPointEncode: EncodeJson[MultiPoint] =
     EncodeJson((mp:MultiPoint) ⇒ ("coordinates" := mp.coordinates) ->: ("type" := "MultiPoint") ->: jEmptyObject)
 
-  private implicit def lineStringDecode: DecodeJson[LineString] =
+  implicit def lineStringDecode: DecodeJson[LineString] =
     jdecode1L(LineString.apply)("coordinates")
 
-  private implicit def lineStringEncode: EncodeJson[LineString] =
+  implicit def lineStringEncode: EncodeJson[LineString] =
     EncodeJson((ls:LineString) ⇒ ("coordinates" := ls.coordinates) ->: ("type" := "LineString") ->: jEmptyObject)
 
-  private implicit def multiLineStringDecode: DecodeJson[MultiLineString] =
+  implicit def multiLineStringDecode: DecodeJson[MultiLineString] =
     jdecode1L(MultiLineString.apply)("coordinates")
 
-  private implicit def multiLineStringEncode: EncodeJson[MultiLineString] =
+  implicit def multiLineStringEncode: EncodeJson[MultiLineString] =
     EncodeJson((mls:MultiLineString) ⇒ ("coordinates" := mls.coordinates) ->: ("type" := "MultiLineString") ->: jEmptyObject)
 
-  private implicit def polygonDecode: DecodeJson[Polygon] =
+  implicit def polygonDecode: DecodeJson[Polygon] =
     jdecode1L(Polygon.apply)("coordinates")
 
-  private implicit def polygonEncode: EncodeJson[Polygon] =
+  implicit def polygonEncode: EncodeJson[Polygon] =
     EncodeJson((p:Polygon) ⇒ ("coordinates" := p.coordinates) ->: ("type" := "Polygon") ->: jEmptyObject)
 
-  private implicit def multiPolygonDecode: DecodeJson[MultiPolygon] =
+  implicit def multiPolygonDecode: DecodeJson[MultiPolygon] =
     jdecode1L(MultiPolygon.apply)("coordinates")
 
-  private implicit def multiPolygonEncode: EncodeJson[MultiPolygon] =
+  implicit def multiPolygonEncode: EncodeJson[MultiPolygon] =
     EncodeJson((p:MultiPolygon) ⇒ ("coordinates" := p.coordinates) ->: ("type" := "MultiPolygon") ->: jEmptyObject)
 
-  private implicit def geometryCollectionDecode: DecodeJson[GeometryCollection] =
+  implicit def geometryCollectionDecode: DecodeJson[GeometryCollection] =
     jdecode1L(GeometryCollection.apply)("geometries")
 
-  private implicit def geometryCollectionEncode: EncodeJson[GeometryCollection] =
+  implicit def geometryCollectionEncode: EncodeJson[GeometryCollection] =
     EncodeJson((p:GeometryCollection) ⇒ ("geometries" := p.geometries) ->: ("type" := "GeometryCollection") ->: jEmptyObject)
 
-  private implicit def geometryCodec:CodecJson[Geometry] =
+  implicit def geometryCodec:CodecJson[Geometry] =
     CodecJson({
       case p:Point               ⇒ p.asJson
       case mp:MultiPoint         ⇒ mp.asJson
@@ -79,10 +79,10 @@ object GeoJsonSerialiser {
     }
     )
 
-  private implicit def featureEncode:EncodeJson[Feature] =
+  implicit def featureEncode:EncodeJson[Feature] =
     EncodeJson((f:Feature) ⇒ ("properties" := f.properties) ->: ("geometry" := f.geometry) ->: ("type" := "Feature") ->: jEmptyObject)
 
-  private implicit def featureDecode:DecodeJson[Feature] =
+  implicit def featureDecode:DecodeJson[Feature] =
     DecodeJson( c ⇒ for {
       geometry ← (c --\ "geometry").as[Geometry]
       properties ← (c --\ "properties").as[Option[Map[String, Json]]]
@@ -91,9 +91,9 @@ object GeoJsonSerialiser {
         case other ⇒ other.toString()
       }).getOrElse(Map())))
 
-  private implicit def FeatureCollectionDecode:DecodeJson[FeatureCollection] = jdecode1L(FeatureCollection.apply)("features")
+  implicit def FeatureCollectionDecode:DecodeJson[FeatureCollection] = jdecode1L(FeatureCollection.apply)("features")
 
-  private implicit def FeatureCollectionEncode:EncodeJson[FeatureCollection] = jencode1L((fc:FeatureCollection) ⇒ fc.features)("features")
+  implicit def FeatureCollectionEncode:EncodeJson[FeatureCollection] = jencode1L((fc:FeatureCollection) ⇒ fc.features)("features")
 
   def geometryFromJSON(json:String)  = json.decodeOption[Geometry]
   def jsonFromGeometry(geometry:Geometry) = geometry.asJson.nospaces

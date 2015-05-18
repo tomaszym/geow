@@ -1,6 +1,5 @@
 package org.geow.generator
 
-import monocle.Lens
 import org.geow.model._
 import org.geow.model.geometry._
 

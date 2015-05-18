@@ -14,11 +14,6 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-ws" % "2.4.0-M2",
-//  "com.typesafe.play.extras" %% "play-geojson" % "1.2.0",
-  "com.github.julien-truffaut"  %%  "monocle-core"    % "1.1.1",
-  "com.github.julien-truffaut"  %%  "monocle-generic" % "1.1.1",
-  "org.scalaz.stream" %% "scalaz-stream" % "0.7a",
   "org.scalaz" %% "scalaz-core" % "7.1.2",
   "org.scalaz" %% "scalaz-concurrent" % "7.1.2",
   "com.github.alexarchambault" %% "argonaut-shapeless_6.1" % "0.1.1",

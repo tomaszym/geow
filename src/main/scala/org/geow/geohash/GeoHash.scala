@@ -13,7 +13,7 @@ object PrecisionVeryHigh_1M extends Precision(PRECISION.VERY_HIGH_1M)
 object PrecisionUltra_1CM extends Precision(PRECISION.ULTRA_1CM)
 object PrecisionUltraHigh_1MM extends Precision(PRECISION.ULTRA_HIGH_1MM)
 
-case class GeoHash(val precision: Precision) {
+case class GeoHash(precision: Precision) {
 
   val geohash = new GeoHashImpl(precision.precision)
 

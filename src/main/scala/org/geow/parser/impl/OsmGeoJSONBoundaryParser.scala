@@ -6,7 +6,6 @@ import org.geow.model.OsmDenormalizedObject
 import org.geow.model.geometry._
 import org.geow.parser.OsmDenormalizedParser
 import org.geow.serializer.OsmDenormalisedGeoJSONBijections._
-import org.geow.serializer.GeoJsonSerialiser._
 import argonaut._, Argonaut._, Shapeless._
 
 import scala.io.Source
