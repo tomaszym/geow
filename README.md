@@ -13,6 +13,7 @@ Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetm
 
 **Planned:**
 * Pbf support
+* Remove every last trace of Java code
 
 # Installation
 Make sure your `build.sbt` contains the Sonatype snapshot resolver.
