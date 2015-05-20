@@ -2,10 +2,10 @@ language: scala
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean test
 scala:
-   - 2.11.2
+   - 2.11.6
 jdk:
   - oraclejdk7
   - oraclejdk8
 notifications:
   email:
-    - github@geow.org
+    - info@plasmap.io

@@ -1,7 +1,7 @@
 # Scala OpenStreetMap API
 [![Build Status](https://secure.travis-ci.org/geow-org/api.png?branch=master)](http://travis-ci.org/geow-org/api)
 
-Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetmap.org/wiki/Main_Page) elements. 
+Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetmap.org/wiki/Main_Page) elements.
 
 **Features**:
 * Lightweight domain model
@@ -15,43 +15,41 @@ Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetm
 * Pbf support
 
 # Installation
-SonaType deployment is under way. In the meantime you can use Geow by cloning the repo and building from source:
+Make sure your `build.sbt` contains the Sonatype snapshot resolver.
+```scala
+resolvers +=
+  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 ```
-git clone https://github.com/geow-org/api.git
-sbt update
-sbt publishLocal
-```
-And then add the dependency to your build.sbt:
+Then just add a library dependency.
 ```scala
 libraryDependencies ++= Seq(
-  "io.plasmap" %% "api" % "0.2",
+  "io.plasmap" %% "api" % "0.3-SNAPSHOT",
 )
 ```
-
 
 # Usage
 
 ## Parsing
-Stream Osm files to process Osm objects. Currently files in .osm and .osm.bz2 format are supported. Pbf support is planned for the future. 
+Stream Osm files to process Osm objects. Currently files in .osm and .osm.bz2 format are supported. Pbf support is planned for the future.
 ```scala
-  
+
   import io.plasmap.parser.OsmParser
 
   // create a parser from a file
   val parser = OsmParser(fileName)
-  
+
   // pull openstreetmap data
   for (elem <- parser) println(elem)
 
 ```
 
 ## Serialization
-Serialize and deserialize Osm objects for network transfer. 
+Serialize and deserialize Osm objects for network transfer.
 ```scala
   import io.plasmap.serializer.OsmSerializer._
-  
+
   ... parse or create an osm object element
-  
+
   val serialized = toBinary(osmObject)
   val deserialized = fromBinary(serialized)
 ```

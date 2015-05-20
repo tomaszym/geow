@@ -1,10 +1,45 @@
-name := """api"""
+import SonatypeKeys._
+
+sonatypeSettings
+
+name := "api"
 
 organization := "io.plasmap"
 
 version := "0.3-SNAPSHOT"
 
 scalaVersion := "2.11.6"
+
+homepage := Some(url("http://www.plasmap.io"))
+
+licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html"))
+
+scmInfo := Some(ScmInfo(
+    url("https://github.com/plasmap/geow"),
+    "scm:git:git@github.com/plasmap/geow.git",
+    Some("scm:git:git@github.com/plasmap/geow.git")))
+
+publishMavenStyle := true
+
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
+
+pomExtra := (
+  <developers>
+    <developer>
+      <id>i-am-the-slime</id>
+      <name>Mark Eibes</name>
+      <url>www.plasmap.io</url>
+    </developer>
+  </developers>
+)
+
+pomIncludeRepository := { _ => false }
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
