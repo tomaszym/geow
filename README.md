@@ -5,7 +5,7 @@ Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetm
 
 **Features**:
 * Lightweight domain model
-* Parsing of Osm files (currently xml is supported)
+* Parsing of Osm files. Currently .osm (xml), .osm.bz2 (zipped xml) and .geojson are supported.
 * High-performance binary serialization using scala pickling
 * Support for geometric denormalization (i.e. Osm objects contain the full geometry)
 * GeoJSON serialization
@@ -62,3 +62,9 @@ See the [Benchmarks](https://github.com/geow-org/api/wiki/Benchmarks) wiki page.
 # Contributing
 
 If you like to contribute, please create an issue and send a pull request. For more information on pull requests see the [Github pull request tutorial](https://help.github.com/articles/using-pull-requests).
+
+# Development
+Geow is developed by [plasmap](http://www.plasmap.io)
+[![plasmap](https://avatars3.githubusercontent.com/u/10074281?v=3&s=100)](http://www.plasmap.io)
+
+Join us on twitter [@plasmapio](https://twitter.com/plasmapio)
