@@ -1,6 +1,6 @@
 name := """api"""
 
-organization := "org.geow"
+organization := "io.plasmap"
 
 version := "0.3-SNAPSHOT"
 

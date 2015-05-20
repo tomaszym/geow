@@ -24,7 +24,7 @@ sbt publishLocal
 And then add the dependency to your build.sbt:
 ```scala
 libraryDependencies ++= Seq(
-  "org.geow" %% "api" % "0.2",
+  "io.plasmap" %% "api" % "0.2",
 )
 ```
 
@@ -35,7 +35,7 @@ libraryDependencies ++= Seq(
 Stream Osm files to process Osm objects. Currently files in .osm and .osm.bz2 format are supported. Pbf support is planned for the future. 
 ```scala
   
-  import org.geow.parser.OsmParser
+  import io.plasmap.parser.OsmParser
 
   // create a parser from a file
   val parser = OsmParser(fileName)
@@ -48,7 +48,7 @@ Stream Osm files to process Osm objects. Currently files in .osm and .osm.bz2 fo
 ## Serialization
 Serialize and deserialize Osm objects for network transfer. 
 ```scala
-  import org.geow.serializer.OsmSerializer._
+  import io.plasmap.serializer.OsmSerializer._
   
   ... parse or create an osm object element
   
