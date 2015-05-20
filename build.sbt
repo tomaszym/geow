@@ -2,7 +2,7 @@ import SonatypeKeys._
 
 sonatypeSettings
 
-name := "api"
+name := "geow"
 
 organization := "io.plasmap"
 

@@ -1,5 +1,5 @@
 # Scala OpenStreetMap API
-[![Build Status](https://secure.travis-ci.org/geow-org/api.png?branch=master)](http://travis-ci.org/geow-org/api)
+[![Build Status](https://travis-ci.org/plasmap/geow.svg?branch=master)](https://travis-ci.org/plasmap/geow)
 
 Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetmap.org/wiki/Main_Page) elements.
 
@@ -24,7 +24,7 @@ resolvers +=
 Then just add a library dependency.
 ```scala
 libraryDependencies ++= Seq(
-  "io.plasmap" %% "api" % "0.3-SNAPSHOT",
+  "io.plasmap" %% "geow" % "0.3-SNAPSHOT",
 )
 ```
 
