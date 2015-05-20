@@ -61,7 +61,7 @@ See the [Benchmarks](https://github.com/geow-org/api/wiki/Benchmarks) wiki page.
 
 If you like to contribute, please create an issue and send a pull request. For more information on pull requests see the [Github pull request tutorial](https://help.github.com/articles/using-pull-requests).
 
-# Development
+# I want to talk to the manager!
 
 <p align="center">
 <a href="http://plasmap.io">
@@ -69,6 +69,6 @@ If you like to contribute, please create an issue and send a pull request. For m
 </a>
 <br/><br/>
 
-We develop <em>pamphlet</em> with <b>λ</b> at <a href="http://plasmap.io"><b>plasmap</b></a>.
+We develop <em>geow</em> with <b>λ</b> at <a href="http://plasmap.io"><b>plasmap</b></a>.
 Follow <a href="https://twitter.com/plasmapio">@plasmapio</a> on twitter.
 </p>
