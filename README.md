@@ -1,5 +1,5 @@
 # Scala OpenStreetMap API
-[![Build Status](https://travis-ci.org/plasmap/geow.svg?branch=master)](https://travis-ci.org/plasmap/geow)[![Coverage Status](https://coveralls.io/repos/plasmap/geow/badge.svg)](https://coveralls.io/r/plasmap/geow)
+[![Build Status](https://travis-ci.org/plasmap/geow.svg?branch=master)](https://travis-ci.org/plasmap/geow)[![Coverage Status](https://coveralls.io/repos/plasmap/geow/badge.svg)](https://coveralls.io/r/plasmap/geow)[![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetmap.org/wiki/Main_Page) elements.
 
