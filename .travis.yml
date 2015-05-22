@@ -9,3 +9,6 @@ jdk:
 notifications:
   email:
     - info@plasmap.io
+
+script: "sbt clean coverage test"
+after_success: "sbt coveralls"
