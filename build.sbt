@@ -32,6 +32,11 @@ publishTo := {
 pomExtra := (
   <developers>
     <developer>
+      <id>janschultecom</id>
+      <name>Jan Schulte</name>
+      <url>www.plasmap.io</url>
+    </developer>
+    <developer>
       <id>i-am-the-slime</id>
       <name>Mark Eibes</name>
       <url>www.plasmap.io</url>

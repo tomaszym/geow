@@ -19,7 +19,7 @@ object OsmParser {
       OsmXmlParser(source)
     }
     case osm if fileName.endsWith(".osm") => {
-      val source = Source.fromFile(fileName)(Codec.UTF8)
+      val source = Source.fromFile(fileName)(codec)
       OsmXmlParser(source)
     }
     case pbf if fileName.endsWith(".pbf") => {

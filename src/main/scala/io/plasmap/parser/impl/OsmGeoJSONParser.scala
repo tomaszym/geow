@@ -1,26 +1,19 @@
 package io.plasmap.parser.impl
 
-import java.io.InputStream
-
 import io.plasmap.model.OsmDenormalizedObject
-import io.plasmap.parser.OsmDenormalizedParser
-import io.plasmap.serializer.GeoJsonSerialiser
-import io.plasmap.model._
 import io.plasmap.model.geometry._
 import io.plasmap.parser.OsmDenormalizedParser
 import io.plasmap.serializer.GeoJsonSerialiser
 import io.plasmap.serializer.OsmDenormalisedGeoJSONBijections._
-import argonaut._, Argonaut._
-import scala.io.Source
-import scala.reflect.io.File
+
+import scala.io.{Codec, Source}
 
 /**
  * Created by janschulte on 06/05/15.
  */
-case class OsmGeoJSONParser(is:InputStream) extends OsmDenormalizedParser {
-  import GeoJsonSerialiser._
+case class OsmGeoJSONParser(source:Source) extends OsmDenormalizedParser {
 
-  val json = Source.fromInputStream(is).mkString
+  val json = source.mkString
 
   private val iterator = GeoJsonSerialiser.featureCollectionFromJSON(json)
     .getOrElse(FeatureCollection(Nil))
@@ -32,6 +25,7 @@ case class OsmGeoJSONParser(is:InputStream) extends OsmDenormalizedParser {
 
 }
 
-object OsmGeoJSONParser {
-  def apply(source: String): OsmGeoJSONParser = OsmGeoJSONParser(File(source).inputStream())
+object OsmGeoJSONParser{
+
+  def apply(fileName:String)(implicit codec:Codec) = new OsmGeoJSONParser(Source.fromFile(fileName)(codec))
 }
