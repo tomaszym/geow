@@ -8,6 +8,8 @@ import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
 import argonaut._, Argonaut._
 
+import scala.io.Source
+
 class OsmGeoJSONBoundaryParserSpec extends Specification with ScalaCheck {
 
 
@@ -86,7 +88,7 @@ class OsmGeoJSONBoundaryParserSpec extends Specification with ScalaCheck {
       """.stripMargin
 
     "parse a simple geojson in a string" in {
-      val parser = OsmGeoJSONBoundaryParser(new ByteArrayInputStream(simple.getBytes))
+      val parser = OsmGeoJSONBoundaryParser(Source.fromString(simple))
       val elements = (for(elem ← parser) yield elem).toList
       for (elem ← elements) println(elem)
       elements must not contain None

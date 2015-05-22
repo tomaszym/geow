@@ -1,7 +1,5 @@
 package io.plasmap.parser.impl
 
-import java.io.InputStream
-
 import io.plasmap.serializer.OsmDenormalisedGeoJSONBijections.OsmPropertyNames
 import io.plasmap.model.OsmDenormalizedObject
 import io.plasmap.model.geometry._
@@ -9,8 +7,7 @@ import io.plasmap.parser.OsmDenormalizedParser
 import io.plasmap.serializer.OsmDenormalisedGeoJSONBijections._
 import argonaut._, Argonaut._, Shapeless._
 
-import scala.io.Source
-import scala.reflect.io.File
+import scala.io.{Codec, Source}
 
 /**
  * Created by mark on 14.05.15.
@@ -18,10 +15,10 @@ import scala.reflect.io.File
 final case class Boundary(id:Int,name:String,localname:String,SRID:String, adminLevel:Int, tags:Map[String, String], geometry:GeometryCollection)
 final case class Boundaries(boundaries:List[Boundary])
 
-case class OsmGeoJSONBoundaryParser(is:InputStream) extends OsmDenormalizedParser {
+case class OsmGeoJSONBoundaryParser(source:Source) extends OsmDenormalizedParser {
   import OsmGeoJSONBoundaryParser._
 
-  val json = Source.fromInputStream(is).mkString
+  val json = source.mkString
 
   private val iterator = json.decodeOption[Boundaries]
     .getOrElse(Boundaries(Nil))
@@ -33,7 +30,7 @@ case class OsmGeoJSONBoundaryParser(is:InputStream) extends OsmDenormalizedParse
 }
 
 object OsmGeoJSONBoundaryParser {
-  def apply(source: String): OsmGeoJSONBoundaryParser = OsmGeoJSONBoundaryParser(File(source).inputStream())
+  def apply(fileName: String)(implicit codec:Codec): OsmGeoJSONBoundaryParser = OsmGeoJSONBoundaryParser(Source.fromFile(fileName)(codec))
   implicitly[DecodeJson[List[List[List[Point]]]]]
 
   def getGeometryFromType(typ:String, c:HCursor):DecodeResult[GeometryCollection] = {
