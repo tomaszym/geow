@@ -1,6 +1,10 @@
 import SonatypeKeys._
 
+import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
+
 sonatypeSettings
+
+promptTheme := ScalapenosTheme
 
 name := "geow"
 
@@ -70,4 +74,3 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "junit" % "junit" % "4.11" % "test"
 )
-
