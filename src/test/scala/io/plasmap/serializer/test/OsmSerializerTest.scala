@@ -41,7 +41,7 @@ class OsmSerializerTest extends Specification with ScalaCheck{
       {
         val serialized = toBinary(osmNode)
         val deserialized = fromBinary(serialized)
-        deserialized must be_==(osmNode)
+        deserialized must beSome(osmNode)
       }
     })
     
@@ -49,7 +49,7 @@ class OsmSerializerTest extends Specification with ScalaCheck{
       {
         val serialized = toBinary(osmWay)
         val deserialized = fromBinary(serialized)
-        deserialized must be_==(osmWay)
+        deserialized must beSome(osmWay)
       }
     })
     
@@ -57,7 +57,7 @@ class OsmSerializerTest extends Specification with ScalaCheck{
       {
         val serialized = toBinary(osmRelation)
         val deserialized = fromBinary(serialized)
-        deserialized must be_==(osmRelation)
+        deserialized must beSome(osmRelation)
       }
     })
   }
