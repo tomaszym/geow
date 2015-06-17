@@ -11,7 +11,7 @@ object OsmSerializer {
   import scala.pickling._
   import binary._
 
-  def fromBinary(encoded: Array[Byte]):Option[OsmObject] = Try(encoded.unpickle[OsmObject]).toOption
+  def fromBinary(encoded: Array[Byte]):Try[OsmObject] = Try(encoded.unpickle[OsmObject])
 
   def toBinary(decoded: OsmObject): Array[Byte] = decoded.pickle.value
 

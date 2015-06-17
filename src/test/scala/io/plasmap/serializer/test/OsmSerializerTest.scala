@@ -19,7 +19,6 @@ import io.plasmap.model.geometry._
 import io.plasmap.serializer.OsmSerializer._
 import io.plasmap.generator.OsmObjectGenerator
 
-@RunWith(classOf[JUnitRunner])
 class OsmSerializerTest extends Specification with ScalaCheck{
 
   sequential
@@ -41,7 +40,7 @@ class OsmSerializerTest extends Specification with ScalaCheck{
       {
         val serialized = toBinary(osmNode)
         val deserialized = fromBinary(serialized)
-        deserialized must beSome(osmNode)
+        deserialized must beSuccessfulTry(osmNode)
       }
     })
     
@@ -49,7 +48,7 @@ class OsmSerializerTest extends Specification with ScalaCheck{
       {
         val serialized = toBinary(osmWay)
         val deserialized = fromBinary(serialized)
-        deserialized must beSome(osmWay)
+        deserialized must beSuccessfulTry(osmWay)
       }
     })
     
@@ -57,7 +56,7 @@ class OsmSerializerTest extends Specification with ScalaCheck{
       {
         val serialized = toBinary(osmRelation)
         val deserialized = fromBinary(serialized)
-        deserialized must beSome(osmRelation)
+        deserialized must beSuccessfulTry(osmRelation)
       }
     })
   }
