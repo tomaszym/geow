@@ -66,6 +66,7 @@ libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-compress" % "1.8.1",
   "org.scala-lang" % "scala-xml" % "2.11.0-M4",
   "joda-time" % "joda-time" % "2.3",
+  "org.joda" % "joda-convert" % "1.7",
   "org.hamcrest" % "hamcrest-all" % "1.3" % "test",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
   "org.scalacheck" %% "scalacheck" % "1.11.6" % "test",
