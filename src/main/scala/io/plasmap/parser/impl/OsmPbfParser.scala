@@ -262,12 +262,3 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
   }
 
 }
-
-object OsmPbfParser{
-  def main (args: Array[String]) {
-    val f = "/home/jm/Documents/programmation/geow-org/sample.pbf"
-    val parser = new OsmPbfParser(new File(f))
-
-    parser.foreach( println _ )
-  }
-}
