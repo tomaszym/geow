@@ -7,10 +7,9 @@ package io.plasmap.parser.impl
 import io.plasmap.model.geometry.Point
 import io.plasmap.model._
 import io.plasmap.parser.OsmParser
-import pbfbinaryparser.genclasses.Osmformat.{Relation, Node,DenseNodes, PrimitiveGroup, Way}
+import pbfbinaryparser.genclasses.Osmformat._
 import pbfbinaryparser.genclasses.{Osmformat, Fileformat}
 import java.util.zip.InflaterInputStream
-import shapeless.HList
 
 import scala.annotation.tailrec
 import scala.collection.mutable
@@ -19,6 +18,7 @@ import java.io.{DataInputStream, File, FileInputStream}
 
 
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 
 case class OsmPbfParser (fileName: String)  extends OsmParser{
@@ -117,17 +117,17 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
       .transpose
       .map( t  => OsmTag(stringTable(t(0).asInstanceOf[Int] ), stringTable(t(1).asInstanceOf[Int]) ) )
 
-    val osmRefs = valFromDelta( way.getRefsList.asScala.toList ).map(OsmId)
+    val osmRefs = undelta( way.getRefsList.asScala.toList ).map(OsmId)
     val user = OsmUser( stringTable( way.getInfo.getUserSid ), way.getInfo.getUid)
-    val version = way.getInfo.getVersion
+    val version = osmVersionFromInfo(way.getInfo)
 
-    OsmWay( id, Option(user), OsmVersion(version), osmTags, osmRefs)
+    OsmWay( id, Option(user), version, osmTags, osmRefs)
   }
 
   def getRelations(stringTable: Array[String], relation: Relation): OsmRelation = {
     val osmId = OsmId(relation.getId)
     val osmUser = OsmUser( stringTable( relation.getInfo.getUserSid ), relation.getInfo.getUid )
-    val osmVersion = OsmVersion(  relation.getInfo.getVersion )
+    val osmVersion = osmVersionFromInfo(relation.getInfo)
     val osmTags =
       List( relation.getKeysList.asScala.toList, relation.getValsList.asScala )
       .transpose
@@ -148,7 +148,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
 
     val osmMembers = List(
       relation.getTypesList.asScala.map(_.getNumber),
-      valFromDelta(relation.getMemidsList.asScala.toList),
+      undelta(relation.getMemidsList.asScala.toList),
       relation.getRolesSidList.asScala
     )
       .transpose
@@ -167,14 +167,17 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
     (pos * geoGran + offset) * scaleFactor
   }
 
+  def osmVersionFromInfo(info:Info) = {
+    OsmVersion(info.getTimestamp, info.getVersion, info.getChangeset.toInt, info.getVisible)
+  }
 
   def getSingleNode(stringTable: Array[String], forTheMaths: ForTheMaths, node: Node): OsmNode = {
     val osmId = OsmId(node.getId)
     val osmUser = OsmUser( stringTable( node.getInfo.getUserSid ), node.getInfo.getUid )
-    val osmVersion = OsmVersion(  node.getInfo.getVersion )
+    val osmVersion = osmVersionFromInfo(node.getInfo)
 
     val osmTags =
-      List( valFromDelta(node.getKeysList.asScala.toList), valFromDelta(node.getValsList.asScala.toList) )
+      List( undelta(node.getKeysList.asScala.toList), undelta(node.getValsList.asScala.toList) )
       .transpose
       .map( t  => OsmTag(stringTable(t(0).asInstanceOf[Int] ), stringTable(t(1).asInstanceOf[Int]) ) )
 
@@ -192,7 +195,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
   }
 
   def getDenseNodes( stringTable:Array[String], forTheMaths:ForTheMaths, dns:DenseNodes): List[OsmNode] ={
-    val valIds: List[Long] = valFromDelta(dns.getIdList.asScala.toList)
+    val valIds: List[Long] = undelta(dns.getIdList.asScala.toList)
     val tags: List[(Int, Int, Long)] = getTagsNodeIds(dns.getKeysValsList.asScala.toList.map(_.toInt), valIds)
 
     val latOffset: Long = forTheMaths.latOffset
@@ -209,68 +212,82 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
 
     def c = coordinate(geoGran) _
 
-    //TODO: This is not nice. There's no reason for Any to be here. This can be inside of a data structure
-    val nodes: List[List[Any]] = List(
-      grouped,
-      valFromDelta(dns.getLonList.asScala.toList).map( (lon : Long) => c(lon, lonOffset)),
-      valFromDelta(dns.getLatList.asScala.toList).map( (lat : Long) => c(lat, latOffset)),
-      valFromDelta(dns.getDenseinfo.getChangesetList.asScala.toList),
-      valFromDelta(dns.getDenseinfo.getTimestampList.asScala.toList).map( (ts : Long) => ts * dateGran),
-      valFromDelta(dns.getDenseinfo.getUidList.asScala.toList),
-      valFromDelta(dns.getDenseinfo.getUserSidList.asScala.toList),
-      dns.getDenseinfo.getVersionList.asScala.map(_.longValue())
-    ).transpose
+    case class Lists(
+                    stringTable:Array[String],
+                    grouped:List[(Long, List[(Int, Int, Long)])],
+                    lons:List[Double],
+                    lats:List[Double],
+                    userIds:List[Long],
+                    userNameIndices:List[Long],
+                    timestamps:List[Long],
+                    versions:List[Int],
+                    changeSets:List[Int],
+                    visibles:List[Boolean]
+                      ) {
 
-    //TODO: I really don't like this. I propose making a function that returns an Option of a case class.
-    //All the casting is bad enough. It should be wrapped inside of a Try.
-    //Somewhat like this:
-    //case class AlmostOsmNode(id:Long, tags:List[(String, String, Long)],....)
-    //for {
-    //  id ← Try(xyz.asInstanceOf[Double]).toOption.map(_._1)
-    //  tags ← Try(uvw.asInstanceOf[(Long...]).toOption.map(_.2).map(_.map(kvid: (Int, Int, Long))
-    // ...
-    // } yield AlmostOsmNode(id, tags, ...)
-    // So basically wrap anything that could fail in Try(...).toOption or \/.fromTryCatchNonFatal(...).toOption
-    val osmNodes = nodes.map(n => { toOsmNode(
-        n(0).asInstanceOf[(Long, List[(Int, Int, Long)])]._1,
-        n(0).asInstanceOf[(Long, List[(Int, Int, Long)])]._2.map( (kvid : (Int,Int,Long)) => (stringTable(kvid._1), stringTable(kvid._2), kvid._3)),
-        n(1).asInstanceOf[Double], //lon
-        n(2).asInstanceOf[Double], //lat
-        n(3).asInstanceOf[Long],
-        n(4).asInstanceOf[Long],
-        n(5).asInstanceOf[Long],
-        stringTable( n(6).asInstanceOf[Long].toInt ),
-        n(7).asInstanceOf[Long])
-    })
+      def toNodes:List[OsmNode] = {
+        for(i ← grouped.indices.toList) yield {
+          toOsmNode(
+            grouped(i)._1,
+            grouped(i)._2.map{ case (k, v, _) ⇒ (stringTable(k), stringTable(v)) },
+            lons(i),
+            lats(i),
+            userIds(i),
+            stringTable(userNameIndices(i).toInt),
+            timestamps(i),
+            versions(i),
+            changeSets(i),
+            Try(visibles(i)).getOrElse(true)
+          )
+        }
+      }
+
+    }
+
+    def toOsmNode( id : Long,
+                   tags :List[(String,String)],
+                   lon : Double,
+                   lat: Double,
+                   userId : Long,
+                   userName :String,
+                   versionTimestamp: Long,
+                   versionNumber:Int,
+                   versionChangeSet:Int,
+                   versionIsVisible:Boolean
+                   ): OsmNode = {
+
+      val osmUser = Option(OsmUser(userName, userId))
+      val osmTags = tags.filter{ case (k,v) ⇒ k != ""}.map(OsmTag.tupleToTag)
+      val osmId = OsmId(id)
+      val point = Point(lon, lat)
+      val version = OsmVersion(versionTimestamp, versionNumber, versionChangeSet, versionIsVisible)
+
+      OsmNode(osmId, osmUser, version, osmTags, point)
+
+    }
+
+    val nodes = Lists(
+      stringTable,
+      grouped,
+      undelta(dns.getLonList.asScala.toList).map( (lon : Long) => c(lon, lonOffset)),
+      undelta(dns.getLatList.asScala.toList).map( (lat : Long) => c(lat, latOffset)),
+      undelta(dns.getDenseinfo.getUidList.asScala.toList),
+      undelta(dns.getDenseinfo.getUserSidList.asScala.toList),
+      undelta(dns.getDenseinfo.getTimestampList.asScala.toList).map(_ * dateGran),
+      dns.getDenseinfo.getVersionList.asScala.toList.map(_.toInt),
+      undelta(dns.getDenseinfo.getChangesetList.asScala.toList).map(_.toInt),
+      dns.getDenseinfo.getVisibleList.asScala.toList.map(_.booleanValue())
+    )
+
+    val osmNodes = nodes.toNodes
     osmNodes
   }
 
-  def toOsmNode( id : Long, tags :List[(String,String,Long)], lon : Double, lat: Double, changeSet: Long, timeStamp: Long, uid : Long, user :String, version: Long): OsmNode = {
-    val osmUser = OsmUser(user, uid)
-    val osmTags = tags.filter(_._1 != "").map( {
-      case (key : String, v :String, id :Long) => OsmTag(key, v)
-    })
-    val osmId = OsmId(id)
-    val point = Point(lon, lat)
 
-    OsmNode(osmId, Option(osmUser), OsmVersion(version), osmTags, point)
-
+  def undelta(l : List[Number]): List[Long] = {
+    l.scanLeft(0L)( (delta, number) => number.longValue + delta).tail
   }
-
-
-  def valFromDelta(l : List[Number]): List[Long] = {
-    //Nice implementation of scanLeft
-//    @tailrec
-//    def go( l : List[Number] , delta : Long, acc : List[Long]):  List[Long] = l match {
-//      case Nil => acc
-//      case h :: t =>
-//        val x = h.longValue + delta
-//        go( t, x, x :: acc)
-//    }
-//
-//    go(l, 0, List.empty[Long]).reverse
-    l.scanLeft(0L)( (delta, number) => number.longValue() + delta).tail
-  }
+  
   /*
    * Two succeeding integers in the key value list kv represent the key=value pair of a single <tag> element.
    * The value zero in the kv list represent the move to a new node that can contains several tags or none.
