@@ -91,11 +91,11 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
           .foreach( n => osmObjects.enqueue(Option(n)))
 
         pg.getRelationsList.asScala
-          .map( getRelations(stringTable, _) )
+          .map( getRelations(stringTable, _, forTheMaths) )
           .foreach( r => osmObjects.enqueue(Option(r)) )
 
         pg.getWaysList.asScala
-          .map( getWays(stringTable , _) )
+          .map( getWays(stringTable , _, forTheMaths) )
           .foreach( w => osmObjects.enqueue(Option(w)) )
       }
     )
@@ -108,7 +108,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
       pb
   }
 
-  def getWays(stringTable: Array[String], way: Way): OsmWay = {
+  def getWays(stringTable: Array[String], way: Way, forTheMaths: ForTheMaths): OsmWay = {
     val id = OsmId( way.getId )
     val osmTags = List(
       way.getKeysList.asScala,
@@ -119,15 +119,15 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
 
     val osmRefs = undelta( way.getRefsList.asScala.toList ).map(OsmId)
     val user = OsmUser( stringTable( way.getInfo.getUserSid ), way.getInfo.getUid)
-    val version = osmVersionFromInfo(way.getInfo)
+    val version = osmVersionFromInfo(way.getInfo, forTheMaths.dateGranularity)
 
     OsmWay( id, Option(user), version, osmTags, osmRefs)
   }
 
-  def getRelations(stringTable: Array[String], relation: Relation): OsmRelation = {
+  def getRelations(stringTable: Array[String], relation: Relation, forTheMaths: ForTheMaths): OsmRelation = {
     val osmId = OsmId(relation.getId)
     val osmUser = OsmUser( stringTable( relation.getInfo.getUserSid ), relation.getInfo.getUid )
-    val osmVersion = osmVersionFromInfo(relation.getInfo)
+    val osmVersion = osmVersionFromInfo(relation.getInfo, forTheMaths.dateGranularity)
     val osmTags =
       List( relation.getKeysList.asScala.toList, relation.getValsList.asScala )
       .transpose
@@ -167,14 +167,14 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
     (pos * geoGran + offset) * scaleFactor
   }
 
-  def osmVersionFromInfo(info:Info) = {
-    OsmVersion(info.getTimestamp, info.getVersion, info.getChangeset.toInt, info.getVisible)
+  def osmVersionFromInfo(info:Info, dateGranularity : Int) = {
+    OsmVersion(info.getTimestamp * dateGranularity, info.getVersion, info.getChangeset.toInt, info.getVisible)
   }
 
   def getSingleNode(stringTable: Array[String], forTheMaths: ForTheMaths, node: Node): OsmNode = {
     val osmId = OsmId(node.getId)
     val osmUser = OsmUser( stringTable( node.getInfo.getUserSid ), node.getInfo.getUid )
-    val osmVersion = osmVersionFromInfo(node.getInfo)
+    val osmVersion = osmVersionFromInfo(node.getInfo, forTheMaths.dateGranularity)
 
     val osmTags =
       List( undelta(node.getKeysList.asScala.toList), undelta(node.getValsList.asScala.toList) )
