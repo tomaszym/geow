@@ -8,10 +8,7 @@ import java.nio.charset.{StandardCharsets}
 import java.nio.file.{StandardOpenOption, Files}
 
 import io.plasmap.model.{OsmRoleOuter, OsmTypeWay}
-import org.junit.Rule
 import org.specs2.mutable.Specification
-import org.scalacheck.{ Arbitrary, Gen }
-import org.scalacheck._
 
 import java.io.File
 import org.openstreetmap.osmosis.core.Osmosis
@@ -22,10 +19,7 @@ import org.junit.runner._
 
 import org.specs2.ScalaCheck
 
-import scala.io.Source
-
 import io.plasmap.parser.impl.OsmPbfParser
-import io.plasmap.parser.impl.OsmXmlParser
 import io.plasmap.parser.impl.OsmXmlParser._
 import io.plasmap.model._
 import io.plasmap.model.geometry.Point
@@ -159,13 +153,8 @@ class OsmPbfParserSpec extends Specification with ScalaCheck {
 
   val relation = OsmRelation(relationId, relationUser, relationVersion , relationTags, relationMembers)
 
-  val parserXml = OsmXmlParser(Source.fromString(xml.toString))
 
-  @Rule
-  val folder = new TemporaryFolder()
-
-  def makePbfFile : File = {
-    folder.create()
+  def makePbfFile(folder : TemporaryFolder) : File = {
     val pbfFile = folder.newFile("test.osm.pbf")
     val xmlFile = folder.newFile("test.osm")
     Files.write(xmlFile.toPath, xml.toString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE)
@@ -181,10 +170,11 @@ class OsmPbfParserSpec extends Specification with ScalaCheck {
   }
 
   "The OsmPbfParser" should {
-    //import org.specs2.matcher.TraversableMatchers.allOf
+    val folder = new TemporaryFolder()
+    folder.create()
+    val parserPbf = OsmPbfParser(makePbfFile(folder).getAbsolutePath)
 
     "parse an Osm pbf" in {
-      val parserPbf = OsmPbfParser(makePbfFile.getAbsolutePath)
 
       parserPbf.hasNext must be_==(true)
       val n = parserPbf.next
@@ -207,6 +197,8 @@ class OsmPbfParserSpec extends Specification with ScalaCheck {
       r.get.version mustEqual relation.version
       r.get.tags must containAllOf(relation.tags)
     }
+
+    folder.delete()
   }
 
 }
