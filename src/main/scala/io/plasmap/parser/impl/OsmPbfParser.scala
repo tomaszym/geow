@@ -22,8 +22,18 @@ import scala.util.Try
 
 
 case class OsmPbfParser (fileName: String)  extends OsmParser{
-  val dis: DataInputStream = reachFirstBlob(fileName)
+
+  val dis = new DataInputStream(new FileInputStream(new File(fileName)))
+
+  val headerBlock = getHeaderBlock(dis)
+
+  val isAlwaysVisible = getIsAlwaysVisible( headerBlock )
+
+  def osmVersionFrom = osmVersionFrom_( isAlwaysVisible ) _
+
   val osmObjects = mutable.Queue[Option[OsmObject]]()
+
+
 
   override def hasNext: Boolean =
     dis.available() != 0 || osmObjects.nonEmpty
@@ -35,8 +45,20 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
     osmObjects.dequeue()
   }
 
-  def reachFirstBlob(fileName: String) : DataInputStream = {
-    val dis = new DataInputStream(new FileInputStream(new File(fileName)))
+  /*
+   * Tell if we can trust the getVisible method of the Info instances.
+   *
+   * Indeed, the getVisible method of the Info instances has no meaning and all the nodes are always visible
+   * except when the writer of the pbf file has set a RequiredFeature with the value : "HistoricalInformation"
+   *
+   * You can find the explanation on the protobuf definition file in the Info description :
+   * https://github.com/openstreetmap/osmosis/blob/master/osmosis-osm-binary/src/main/protobuf/osmformat.proto
+   */
+  def getIsAlwaysVisible(headerBlock : HeaderBlock) : Boolean = {
+    !headerBlock.getRequiredFeaturesList.contains("HistoricalInformation")
+  }
+
+  def getHeaderBlock(dis: DataInputStream) : HeaderBlock = {
     val bhSize: Int = dis.readInt
     val rawBH: Array[Byte] = new Array[Byte](bhSize)
     dis.read(rawBH)
@@ -47,8 +69,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
     dis.read(rawBlob)
     val blob: Fileformat.Blob = Fileformat.Blob.parseFrom(rawBlob)
 
-    val hb: Osmformat.HeaderBlock = Osmformat.HeaderBlock.parseFrom(blob.getRaw)
-    dis
+    Osmformat.HeaderBlock.parseFrom(blob.getRaw)
   }
 
   def nextBlob(dis : DataInputStream): Fileformat.Blob = {
@@ -168,7 +189,14 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
   }
 
   def osmVersionFromInfo(info:Info, dateGranularity : Int) = {
-    OsmVersion(info.getTimestamp * dateGranularity, info.getVersion, info.getChangeset.toInt, info.getVisible)
+    osmVersionFrom(info.getTimestamp, dateGranularity, info.getVersion, info.getChangeset.toInt, info.getVisible)
+  }
+  def osmVersionFrom_(isAlwaysVisible : Boolean)(timestamp: Long,
+                                                 dateGranularity : Int,
+                                                 versionNumber: Int,
+                                                 changeset: Int,
+                                                 visible: Boolean): OsmVersion ={
+    OsmVersion(timestamp * dateGranularity, versionNumber, changeset, isAlwaysVisible || visible)
   }
 
   def getSingleNode(stringTable: Array[String], forTheMaths: ForTheMaths, node: Node): OsmNode = {
@@ -235,6 +263,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
             userIds(i),
             stringTable(userNameIndices(i).toInt),
             timestamps(i),
+            dateGran,
             versions(i),
             changeSets(i),
             Try(visibles(i)).getOrElse(true)
@@ -251,6 +280,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
                    userId : Long,
                    userName :String,
                    versionTimestamp: Long,
+                   dateGranularity : Int,
                    versionNumber:Int,
                    versionChangeSet:Int,
                    versionIsVisible:Boolean
@@ -260,7 +290,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
       val osmTags = tags.filter{ case (k,v) ⇒ k != ""}.map(OsmTag.tupleToTag)
       val osmId = OsmId(id)
       val point = Point(lon, lat)
-      val version = OsmVersion(versionTimestamp, versionNumber, versionChangeSet, versionIsVisible)
+      val version = osmVersionFrom(versionTimestamp, dateGranularity, versionNumber, versionChangeSet, versionIsVisible)
 
       OsmNode(osmId, osmUser, version, osmTags, point)
 
@@ -273,7 +303,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
       undelta(dns.getLatList.asScala.toList).map( (lat : Long) => c(lat, latOffset)),
       undelta(dns.getDenseinfo.getUidList.asScala.toList),
       undelta(dns.getDenseinfo.getUserSidList.asScala.toList),
-      undelta(dns.getDenseinfo.getTimestampList.asScala.toList).map(_ * dateGran),
+      undelta(dns.getDenseinfo.getTimestampList.asScala.toList),
       dns.getDenseinfo.getVersionList.asScala.toList.map(_.toInt),
       undelta(dns.getDenseinfo.getChangesetList.asScala.toList).map(_.toInt),
       dns.getDenseinfo.getVisibleList.asScala.toList.map(_.booleanValue())
