@@ -5,14 +5,15 @@ Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetm
 
 **Features**:
 * Lightweight domain model
-* Parsing of Osm files. Currently .osm (xml), .osm.bz2 (zipped xml) and .geojson are supported.
+* Parsing of Osm files. Currently .osm (xml), .osm.bz2 (zipped xml), .pbf (binary) and .geojson (as denormalized model objects are supported.
 * High-performance binary serialization using scala pickling
 * Support for geometric denormalization (i.e. Osm objects contain the full geometry)
 * GeoJSON serialization
 * Efficient and flexible geo-hashing utilities
 
 **Planned:**
-* Pbf support
+* Serialization optimization
+* Geometry optimization
 * Remove every last trace of Java code
 
 # Installation
@@ -23,7 +24,7 @@ resolvers +=
 ```
 Then just add a library dependency.
 ```scala
-libraryDependencies += "io.plasmap" %% "geow" % "0.3.2-SNAPSHOT"
+libraryDependencies += "io.plasmap" %% "geow" % "0.3.4-SNAPSHOT"
 ```
 
 # Usage
