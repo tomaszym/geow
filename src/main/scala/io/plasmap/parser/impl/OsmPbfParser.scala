@@ -20,6 +20,28 @@ import java.io.{DataInputStream, File, FileInputStream}
 import scala.collection.JavaConverters._
 import scala.util.Try
 
+/*
+* The OsmPbfParser is an Iterable that parse a pbf binary file.
+*
+* It is a binary format for the Open Street Map data. Here is how it described on the OSM's Wiki :
+*
+*    " PBF Format ("Protocolbuffer Binary Format") is primarily intended as an alternative to the XML format. It is about
+*    half of the size of a gzipped planet and about 30% smaller than a bzipped planet. It is also about 5x faster to write
+*    than a gzipped planet and 6x faster to read than a gzipped planet. The format was designed to support future
+*    extensibility and flexibility. "
+*
+* You can read more here: http://wiki.openstreetmap.org/wiki/PBF_Format . And here is a summary:
+*
+* A file consists in a succession of gzipped Fileformat.PrimitiveBlock which contains a number of OsmObjects
+* (Nodes, Way or Relation) in an order of magnitude of 10.000 per PrimitiveBlock.
+*
+* There is a special "DenseNode" object that is a compressed form of a list of nodes. This special treatment for the nodes
+* is justified by the fact that nodes are the most common object stored in a typical pbf file.
+*
+* An important factor of compression comes from the stringTable object. It is a list of all the strings that appear in the
+* OsmObjects. There is one such instance by PrimitiveBlock and each OsmObject of this Primitive block reference each of its
+* Strings (mainly attribute names and values) by its index in the stringTable. This way there is no repetition of strings.
+*/
 
 case class OsmPbfParser (fileName: String)  extends OsmParser{
 
