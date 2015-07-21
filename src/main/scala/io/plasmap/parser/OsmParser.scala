@@ -23,7 +23,7 @@ object OsmParser {
       OsmXmlParser(source)
     }
     case pbf if fileName.endsWith(".pbf") => {
-      throw new Error(".pbf files are not yet supported. Please try .osm or .osm.bz2")
+      OsmPbfParser(fileName)
     }
     case _ => {
       throw new Error("Unknown file type.")
