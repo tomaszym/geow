@@ -29,6 +29,23 @@ object Denormalizer {
     OsmDenormalizedWay(way.id,way.user,way.version, way.tags, geometry)
   }
 
+  def sortRefs(members:List[OsmMember]):List[OsmMember] = {
+    if(members.headOption.map(_.role == OsmRoleOuter).getOrElse(true)) //First is outer, that's fine.
+      members
+    else { //First is not an outer
+      def go(members: List[OsmMember], prevWasInner: Boolean, ordered: List[List[OsmMember]]): List[OsmMember] = {
+        if (members isEmpty) ordered.flatMap(_.reverse).reverse
+        else {
+          val isInner = members.head.role == OsmRoleInner
+          if(prevWasInner && ordered.nonEmpty)
+            go(members.tail, isInner, (members.head :: ordered.head) :: ordered.tail)
+          else // was outer or ordered is Empty
+            go(members.tail, isInner, List(members.head) :: ordered)
+        }
+      }
+      go(members, prevWasInner = false, Nil)
+    }
+  }
 
   def denormalizeRelation(relation: OsmRelation, nodes:Map[OsmId, Point], ways:Map[OsmId, LineString], rels:Map[OsmId, GeometryCollection]):OsmDenormalizedRelation = {
 
@@ -79,7 +96,8 @@ object Denormalizer {
         }
       }
     }
+    val sortedRefs = sortRefs(relation.refs)
     OsmDenormalizedRelation(relation.id, relation.user, relation.version, relation.tags,
-      go(lastWasInner = false, relation.refs, Nil, Nil, Nil))
+      go(lastWasInner = false, sortedRefs, Nil, Nil, Nil))
   }
 }
