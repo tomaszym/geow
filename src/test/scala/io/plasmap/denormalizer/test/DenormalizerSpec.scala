@@ -24,10 +24,17 @@ class DenormalizerSpec extends Specification with ScalaCheck {
     def w(id:Int, nds:List[Int]) = OsmWay(OsmId(id), None, OsmVersion(timestamp = 1L), Nil, nds.map(OsmId(_)))
     def n(id:Int, xy:(Double, Double)) = OsmNode(OsmId(id), None, OsmVersion(timestamp = 1L), Nil, Point(xy._1, xy._2))
 
-    "put outers into the first position" in {
+    "put one outer into the first position" in {
       val members = List(OsmRoleInner, OsmRoleOuter, OsmRoleInner)
                       .map(OsmMember.curried(OsmTypeWay)(OsmId(Random.nextInt())))
       val sorted = List(members(1), members(0), members(2))
+      Denormalizer.sortRefs(members) must beEqualTo(sorted)
+    }
+
+    "put many outers into the correct positions" in {
+      val members = List(OsmRoleInner, OsmRoleOuter, OsmRoleInner, OsmRoleOuter)
+        .map(OsmMember.curried(OsmTypeWay)(OsmId(Random.nextInt())))
+      val sorted = List(members(1), members(0), members(3), members(2))
       Denormalizer.sortRefs(members) must beEqualTo(sorted)
     }
 
