@@ -55,7 +55,7 @@ case class OsmPbfParser (fileName: String)  extends OsmParser{
 
   val osmObjects = mutable.Queue[Option[OsmObject]]()
 
-
+  override def close() = dis.close()
 
   override def hasNext: Boolean =
     dis.available() != 0 || osmObjects.nonEmpty
