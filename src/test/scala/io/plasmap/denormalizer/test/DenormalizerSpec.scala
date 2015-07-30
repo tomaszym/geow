@@ -31,10 +31,16 @@ class DenormalizerSpec extends Specification with ScalaCheck {
       Denormalizer.sortRefs(members) must beEqualTo(sorted)
     }
 
+    "make single inners into outers" in {
+      val members = List(OsmMember(OsmTypeWay, OsmId(0L), OsmRoleInner))
+      val sorted = List(OsmMember(OsmTypeWay, OsmId(0L), OsmRoleOuter))
+      Denormalizer.sortRefs(members) must beEqualTo(sorted)
+    }
+
     "put many outers into the correct positions" in {
       val members = List(OsmRoleInner, OsmRoleOuter, OsmRoleInner, OsmRoleOuter)
         .map(OsmMember.curried(OsmTypeWay)(OsmId(Random.nextInt())))
-      val sorted = List(members(1), members(0), members(3), members(2))
+      val sorted = List(members(1), members(3), members(0), members(2))
       Denormalizer.sortRefs(members) must beEqualTo(sorted)
     }
 
@@ -111,7 +117,7 @@ class DenormalizerSpec extends Specification with ScalaCheck {
       val geoNodes = denNodes.map(n ⇒ Bijections.denormalizedToGeoJson(n))
       val geoWays  = denWays.map(w ⇒ Bijections.denormalizedToGeoJson(w))
       val geoRels  = Bijections.denormalizedToGeoJson(denRel)
-      OsmDenormalizedSerializer.toGeoJsonString(denRel) must beEqualTo("""{"type":"Feature","geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","coordinates":[[[[6.1852547,51.8460303],[6.1846501,51.845449],[6.1845825,51.8446737],[6.1851827,51.8446655],[6.1852619,51.8444029],[6.1856832,51.844403],[6.1875099,51.8457537],[6.1857179,51.846468],[6.1852547,51.8460303]],[[6.1846638,51.84486],[6.1848425,51.8448636],[6.1848194,51.8447229],[6.1846638,51.8447318],[6.1846638,51.84486]],[[6.1846782,51.8450736],[6.1848252,51.8450808],[6.1848281,51.8449223],[6.1846638,51.8449294],[6.1846782,51.8450736]],[[6.1856956,51.8457815],[6.1872228,51.8457352],[6.1863524,51.8452398],[6.1856542,51.8452609],[6.1856956,51.8457815]],[[6.1848945,51.8454522],[6.1855519,51.8454463],[6.1855346,51.8447022],[6.1848772,51.8447081],[6.1848945,51.8454522]]]]}]},"properties":{"_osm_version_changeset":"1","_osm_id":"1360929","_osm_version_visible":"true","_osm_version_timestamp":"1","_osm_user_id":"None","_osm_user_name":"None"}}""")
+      OsmDenormalizedSerializer.toGeoJsonString(denRel) must beEqualTo("""{"type":"Feature","geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","coordinates":[[[[6.1852547,51.8460303],[6.1846501,51.845449],[6.1845825,51.8446737],[6.1851827,51.8446655],[6.1852619,51.8444029],[6.1856832,51.844403],[6.1875099,51.8457537],[6.1857179,51.846468],[6.1852547,51.8460303]],[[6.1846782,51.8450736],[6.1848252,51.8450808],[6.1848281,51.8449223],[6.1846638,51.8449294],[6.1846782,51.8450736]],[[6.1846638,51.84486],[6.1848425,51.8448636],[6.1848194,51.8447229],[6.1846638,51.8447318],[6.1846638,51.84486]],[[6.1848945,51.8454522],[6.1855519,51.8454463],[6.1855346,51.8447022],[6.1848772,51.8447081],[6.1848945,51.8454522]],[[6.1856956,51.8457815],[6.1872228,51.8457352],[6.1863524,51.8452398],[6.1856542,51.8452609],[6.1856956,51.8457815]]]]}]},"properties":{"_osm_version_changeset":"1","_osm_id":"1360929","_osm_version_visible":"true","_osm_version_timestamp":"1","_osm_user_id":"None","_osm_user_name":"None"}}""")
     }
 
     "denormalise a simplified version of relation http://osm.org/relation/1373904 correctly" in {
@@ -162,7 +168,7 @@ class DenormalizerSpec extends Specification with ScalaCheck {
       val geoNodes = denNodes.map(n ⇒ Bijections.denormalizedToGeoJson(n))
       val geoWays  = denWays.map(w ⇒ Bijections.denormalizedToGeoJson(w))
       val geoRels  = Bijections.denormalizedToGeoJson(denRel)
-      OsmDenormalizedSerializer.toGeoJsonString(denRel).trim() must beEqualTo("""{"type":"Feature","geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","coordinates":[[[[6.7245784,51.1707285],[6.7233803,51.1706678],[6.723407,51.1710139],[6.7244427,51.1711302],[6.7245784,51.1707285]],[[6.7239052,51.1708848],[6.7238241,51.1708764],[6.7238433,51.1708029],[6.7239245,51.1708112],[6.7239052,51.1708848]],[[6.7239214,51.1709826],[6.7239349,51.1709197],[6.7240489,51.1709293],[6.7240353,51.1709922],[6.7239214,51.1709826]]]]}]},"properties":{"_osm_version_changeset":"1","_osm_id":"1373904","_osm_version_visible":"true","_osm_version_timestamp":"1","_osm_user_id":"None","_osm_user_name":"None"}}""")
+      OsmDenormalizedSerializer.toGeoJsonString(denRel).trim() must beEqualTo("""{"type":"Feature","geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","coordinates":[[[[6.7245784,51.1707285],[6.7233803,51.1706678],[6.723407,51.1710139],[6.7244427,51.1711302],[6.7245784,51.1707285]],[[6.7239214,51.1709826],[6.7239349,51.1709197],[6.7240489,51.1709293],[6.7240353,51.1709922],[6.7239214,51.1709826]],[[6.7239052,51.1708848],[6.7238241,51.1708764],[6.7238433,51.1708029],[6.7239245,51.1708112],[6.7239052,51.1708848]]]]}]},"properties":{"_osm_version_changeset":"1","_osm_id":"1373904","_osm_version_visible":"true","_osm_version_timestamp":"1","_osm_user_id":"None","_osm_user_name":"None"}}""")
     }
 
     "denormalise some Nodes, Ways and Relations into their respective geojson" in {
