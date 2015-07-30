@@ -24,7 +24,7 @@ resolvers +=
 ```
 Then just add a library dependency.
 ```scala
-libraryDependencies += "io.plasmap" %% "geow" % "0.3.5-SNAPSHOT"
+libraryDependencies += "io.plasmap" %% "geow" % "0.3.6-SNAPSHOT"
 ```
 
 # Usage
