@@ -20,18 +20,25 @@ object OsmDenormalisedGeoJSONBijections {
     val osmVersionNumber = "_osm_version_changeset"
     val osmVersionTimestamp = "_osm_version_timestamp"
     val osmVersionVisible = "_osm_version_visible"
+    val osmType = "_osm_type"
   }
   
   private def osmProperties(osmObj:OsmDenormalizedObject):TagMap = {
     import OsmPropertyNames._
+    val typ = osmObj match {
+      case _:OsmDenormalizedNode     ⇒ "node"
+      case _:OsmDenormalizedWay      ⇒ "way"
+      case _:OsmDenormalizedRelation ⇒ "relation"
+    }
     Map(
-      osmId → osmObj.id.value.toString,
-      osmUserId → osmObj.user.map(_.uid.toString).getOrElse("None"),
-      osmUserName → osmObj.user.map(_.username).getOrElse("None"),
-      osmVersionChangeset → osmObj.version.changeset.toString,
-      osmVersionNumber → osmObj.version.versionNumber.toString,
-      osmVersionTimestamp → osmObj.version.timestamp.toString,
-      osmVersionVisible → osmObj.version.visible.toString
+      osmId                → osmObj.id.value.toString,
+      osmUserId            → osmObj.user.map(_.uid.toString).getOrElse("None"),
+      osmUserName          → osmObj.user.map(_.username).getOrElse("None"),
+      osmVersionChangeset  → osmObj.version.changeset.toString,
+      osmVersionNumber     → osmObj.version.versionNumber.toString,
+      osmVersionTimestamp  → osmObj.version.timestamp.toString,
+      osmVersionVisible    → osmObj.version.visible.toString,
+      osmType              → typ
     )
   }
 
@@ -65,7 +72,7 @@ object OsmDenormalisedGeoJSONBijections {
      versionOpt.getOrElse( OsmVersion() )
     }
 
-    val oTags:List[OsmTag] = (tags - osmId - osmUserName - osmUserId - osmVersionTimestamp - osmVersionChangeset - osmVersionNumber).toList.map{
+    val oTags:List[OsmTag] = (tags - osmId - osmUserName - osmUserId - osmVersionTimestamp - osmVersionChangeset - osmVersionNumber - osmType).toList.map{
       case (k, v) ⇒ OsmTag(k, v)
     }
     PartialOsmObject(id, user, version, oTags)
