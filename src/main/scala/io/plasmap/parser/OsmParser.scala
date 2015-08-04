@@ -7,7 +7,9 @@ import scala.io.Codec
 import scala.io.Source
 import impl._
 
-trait OsmParser extends Iterator[Option[OsmObject]]
+trait OsmParser extends Iterator[Option[OsmObject]] {
+  def close()
+}
 
 object OsmParser {
 

@@ -24,6 +24,11 @@ case class OsmXmlParser(source: Source) extends OsmParser {
 
   val reader = new XMLEventReader(source)
 
+  override def close() = {
+    reader.stop()
+    source.close()
+  }
+
   override def hasNext() = reader.hasNext
 
   override def next(): Option[OsmObject] = {
@@ -110,7 +115,6 @@ case class OsmXmlParser(source: Source) extends OsmParser {
     }
     result
   }
-
 
 }
 
