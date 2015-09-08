@@ -30,7 +30,7 @@ libraryDependencies += "io.plasmap" %% "geow" % "0.3.6-SNAPSHOT"
 # Usage
 
 ## Parsing
-Stream Osm files to process Osm objects. Currently files in .osm and .osm.bz2 format are supported. Pbf support is planned for the future.
+Stream Osm files to process Osm objects. Currently files in .osm, .osm.bz2, .pbf and .geojson formats are supported. 
 ```scala
 
   import io.plasmap.parser.OsmParser
