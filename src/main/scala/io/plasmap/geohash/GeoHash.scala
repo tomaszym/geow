@@ -1,10 +1,10 @@
 package io.plasmap.geohash
 
-import io.plasmap.geohash.impl.GeoHashImpl.PRECISION
-import io.plasmap.geohash.impl.GeoHashImpl.PRECISION
 import io.plasmap.geohash.impl.GeoHashImpl
+import io.plasmap.geohash.impl.GeoHashImpl.PRECISION
 
 sealed abstract class Precision(val precision: PRECISION)
+object PrecisionMediumLow_10KM extends Precision(PRECISION.MEDIUM_LOW_10KM)
 object PrecisionUltraLow_630KM extends Precision(PRECISION.ULTRA_LOW_630KM)
 object PrecisionVeryLow_80KM extends Precision(PRECISION.VERY_LOW_80KM)
 object PrecisionLow_20KM extends Precision(PRECISION.LOW_20KM)
@@ -58,7 +58,7 @@ case class GeoHash(precision: Precision) {
 }
 
 object GeoHash{
-
+  def mediumLow = new GeoHash(PrecisionMediumLow_10KM)
   def ultraLow = new GeoHash(PrecisionUltraLow_630KM)
   def veryLow = new GeoHash(PrecisionVeryLow_80KM)
   def low = new GeoHash(PrecisionLow_20KM)

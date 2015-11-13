@@ -1,8 +1,7 @@
 package io.plasmap.geohash.test
 
-import io.plasmap.geohash._
-import io.plasmap.geohash._
 import io.plasmap.generator.OsmObjectGenerator
+import io.plasmap.geohash._
 import org.specs2.ScalaCheck
 import org.specs2.execute.Result
 import org.specs2.mutable.Specification
@@ -25,6 +24,7 @@ class GeoHashSpec extends Specification with ScalaCheck {
   private val hashVeryHigh = new GeoHash(PrecisionVeryHigh_1M)
   private val hashUltra = new GeoHash(PrecisionUltra_1CM)
   private val hashUltraHigh = new GeoHash(PrecisionUltraHigh_1MM)
+  private val hashMediumLow = new GeoHash(PrecisionMediumLow_10KM)
 
   val testCases = 100000
 
@@ -46,6 +46,25 @@ class GeoHashSpec extends Specification with ScalaCheck {
         }
       }
     }
+
+    s"encode/decode $testCases points at medium low precision" in {
+
+      Result.unit {
+        (1 to testCases) foreach {
+          i =>
+
+            val expectedPoint = generator.generatePoint
+
+            val hash = hashMediumLow.encodeParallel(expectedPoint.lon, expectedPoint.lat)
+            val (lon, lat) = hashMediumLow.decodeParallel(hash)
+
+            lon must beCloseTo(expectedPoint.lon, 180 / Math.pow(2, 5))
+            lat must beCloseTo(expectedPoint.lat, 90 / Math.pow(2, 5))
+        }
+      }
+    }
+
+
     s"encode/decode $testCases points at very low precision" in {
 
       Result.unit {

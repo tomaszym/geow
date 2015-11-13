@@ -1,5 +1,3 @@
-import SonatypeKeys._
-
 import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
 
 sonatypeSettings
@@ -10,7 +8,7 @@ name := "geow"
 
 organization := "io.plasmap"
 
-version := "0.3.7-SNAPSHOT"
+version := "0.3.8-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 

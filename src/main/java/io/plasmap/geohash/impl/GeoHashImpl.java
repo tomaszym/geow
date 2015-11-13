@@ -37,6 +37,7 @@ public class GeoHashImpl {
 		ULTRA_LOW_630KM(5),
 		VERY_LOW_80KM(8),
 		LOW_20KM(10),
+		MEDIUM_LOW_10KM(11),
 		MEDIUM_5KM(13),
 		HIGH_100M(18),
 		VERY_HIGH_1M(24),
