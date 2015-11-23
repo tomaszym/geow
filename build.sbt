@@ -8,7 +8,7 @@ name := "geow"
 
 organization := "io.plasmap"
 
-version := "0.3.8-SNAPSHOT"
+version := "0.3.9-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 
@@ -56,6 +56,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "org.spire-math" %% "spire" % "0.11.0",
   "org.scalaz" %% "scalaz-core" % "7.1.2",
   "org.scalaz" %% "scalaz-concurrent" % "7.1.2",
   "com.github.alexarchambault" %% "argonaut-shapeless_6.1" % "0.1.1",

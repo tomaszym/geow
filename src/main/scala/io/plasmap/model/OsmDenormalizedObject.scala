@@ -19,6 +19,54 @@ sealed trait OsmDenormalizedObject{
   }
 
   override def toString = toGeoJson(withTags = false)
+
+  def isNode = this match {
+    case _:OsmDenormalizedNode      => true
+    case _:OsmDenormalizedWay       => false
+    case _:OsmDenormalizedRelation  => false
+  }
+
+  def isWay = this match {
+    case _:OsmDenormalizedNode      => false
+    case _:OsmDenormalizedWay       => true
+    case _:OsmDenormalizedRelation  => false
+  }
+
+  def isRelation = this match {
+    case _:OsmDenormalizedNode      => false
+    case _:OsmDenormalizedWay       => false
+    case _:OsmDenormalizedRelation  => true
+  }
+
+  def nodeOption:Option[OsmDenormalizedNode] = this match {
+    case n:OsmDenormalizedNode      => Some(n)
+    case _:OsmDenormalizedWay       => None
+    case _:OsmDenormalizedRelation  => None
+  }
+
+  def wayOption:Option[OsmDenormalizedWay] = this match {
+    case _:OsmDenormalizedNode      => None
+    case w:OsmDenormalizedWay       => Some(w)
+    case _:OsmDenormalizedRelation  => None
+  }
+
+  def relationOption:Option[OsmDenormalizedRelation] = this match {
+    case _:OsmDenormalizedNode      => None
+    case _:OsmDenormalizedWay       => None
+    case r:OsmDenormalizedRelation  => Some(r)
+  }
+
+  def fold[A](
+               node     :OsmDenormalizedNode     => A,
+               way      :OsmDenormalizedWay      => A,
+               relation :OsmDenormalizedRelation => A) = {
+    this match {
+      case n:OsmDenormalizedNode      => node(n)
+      case w:OsmDenormalizedWay       => way(w)
+      case r:OsmDenormalizedRelation  => relation(r)
+    }
+  }
+
 }
 
 case class OsmDenormalizedNode(id: OsmId, user: Option[OsmUser] = None, version:OsmVersion = OsmVersion(), tags : List[OsmTag], geometry : Point) extends OsmDenormalizedObject{

@@ -12,6 +12,53 @@ sealed trait OsmObject{
 
   def tagsToString = tags.mkString("[",",","]")
 
+  def isNode = this match {
+    case _:OsmNode      => true
+    case _:OsmWay       => false
+    case _:OsmRelation  => false
+  }
+
+  def isWay = this match {
+    case _:OsmNode      => false
+    case _:OsmWay       => true
+    case _:OsmRelation  => false
+  }
+
+  def isRelation = this match {
+    case _:OsmNode      => false
+    case _:OsmWay       => false
+    case _:OsmRelation  => true
+  }
+
+  def nodeOption: Option[OsmNode] = this match {
+    case n: OsmNode     => Some(n)
+    case _: OsmWay      => None
+    case _: OsmRelation => None
+  }
+
+  def wayOption: Option[OsmWay] = this match {
+    case _: OsmNode     => None
+    case w: OsmWay      => Some(w)
+    case _: OsmRelation => None
+  }
+
+  def relationOption: Option[OsmRelation] = this match {
+    case _: OsmNode     => None
+    case _: OsmWay      => None
+    case r: OsmRelation => Some(r)
+  }
+
+  def fold[A](
+               node     :OsmNode     => A,
+               way      :OsmWay      => A,
+               relation :OsmRelation => A) = {
+    this match {
+      case n:OsmNode      => node(n)
+      case w:OsmWay       => way(w)
+      case r:OsmRelation  => relation(r)
+    }
+  }
+
 }
 case class OsmNode(id: OsmId, user: Option[OsmUser] = None, version:OsmVersion = OsmVersion(), tags: List[OsmTag], point : Point) extends OsmObject{
   override def toString() = {
