@@ -42,25 +42,26 @@ class OsmDenormalizedSerializerTest extends Specification with ScalaCheck {
       {
         val serialized = toBinary(osmDenormalizedNode)
         val deserialized = fromBinary(serialized)
-        deserialized must be_==(osmDenormalizedNode)
+        deserialized must beSuccessfulTry(osmDenormalizedNode)
       }
     })
-    
+
+    "serialize and deserialize an OsmDenormalizedWay object" ! check(prop{ osmDenormalizedWay:OsmDenormalizedWay =>
+    {
+      val serialized = toBinary(osmDenormalizedWay)
+      val deserialized = fromBinary(serialized)
+      deserialized must beSuccessfulTry(osmDenormalizedWay)
+    }
+    })
+
     "serialize and deserialize an OsmDenormalizedRelation object" ! check(prop{ osmDenormalizedRelation: OsmDenormalizedRelation =>
       {
         val serialized = toBinary(osmDenormalizedRelation)
         val deserialized = fromBinary(serialized)
-        deserialized must be_==(osmDenormalizedRelation)        
+        deserialized must beSuccessfulTry(osmDenormalizedRelation)
       }
     })
-    
-    "serialize and deserialize an OsmDenormalizedWay object" ! check(prop{ osmDenormalizedWay:OsmDenormalizedWay =>
-      {
-        val serialized = toBinary(osmDenormalizedWay)
-        val deserialized = fromBinary(serialized)
-        deserialized must be_==(osmDenormalizedWay)
-      }
-    })
+
   }
 
 }

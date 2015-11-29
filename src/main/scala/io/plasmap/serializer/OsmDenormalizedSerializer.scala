@@ -1,17 +1,21 @@
 package io.plasmap.serializer
 
 import io.plasmap.model._
+import com.twitter.chill.KryoInjection
+
+import scala.util.Try
 
 object OsmDenormalizedSerializer {
 
-  import scala.pickling._
+  /*import scala.pickling._
   import scala.pickling.Defaults._
-  import scala.pickling.binary._
-  import scala.pickling.shareNothing._
+  import scala.pickling.binary._*/
 
-  def fromBinary(encoded: Array[Byte]): OsmDenormalizedObject = encoded.unpickle[OsmDenormalizedObject]
+  //def fromBinary(encoded: Array[Byte]): OsmDenormalizedObject = encoded.unpickle[OsmDenormalizedObject]
+  def fromBinary(bytes: Array[Byte]): Try[OsmDenormalizedObject] = KryoInjection.invert(bytes).map(_.asInstanceOf[OsmDenormalizedObject])
 
-  def toBinary(decoded: OsmDenormalizedObject): Array[Byte] = decoded.pickle.value
+  //def toBinary(decoded: OsmDenormalizedObject): Array[Byte] = decoded.pickle.value
+  def toBinary(item: OsmDenormalizedObject): Array[Byte] = KryoInjection(item)
 
   def toGeoJsonString(osmDenormalizedObjects:List[OsmDenormalizedObject]):String = {
     GeoJsonSerialiser.jsonFromFeatureCollection(
