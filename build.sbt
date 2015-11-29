@@ -61,7 +61,7 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-concurrent" % "7.1.2",
   "com.github.alexarchambault" %% "argonaut-shapeless_6.1" % "0.1.1",
   "org.json4s" %% "json4s-native" % "3.2.11",
-  "org.scala-lang" %% "scala-pickling" % "0.9.1",
+  "org.scala-lang.modules" %% "scala-pickling" % "0.10.1",
   "org.apache.commons" % "commons-compress" % "1.8.1",
   "org.scala-lang" % "scala-xml" % "2.11.0-M4",
   "joda-time" % "joda-time" % "2.3",

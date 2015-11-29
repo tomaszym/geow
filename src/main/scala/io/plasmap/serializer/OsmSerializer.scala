@@ -9,8 +9,9 @@ import scalaz.\/
 object OsmSerializer {
 
   import scala.pickling._
+  import scala.pickling.Defaults._
+  import scala.pickling.binary._
   import scala.pickling.shareNothing._
-  import binary._
 
   def fromBinary(encoded: Array[Byte]):Try[OsmObject] = Try(encoded.unpickle[OsmObject])
 

@@ -5,8 +5,9 @@ import io.plasmap.model._
 object OsmDenormalizedSerializer {
 
   import scala.pickling._
+  import scala.pickling.Defaults._
+  import scala.pickling.binary._
   import scala.pickling.shareNothing._
-  import binary._
 
   def fromBinary(encoded: Array[Byte]): OsmDenormalizedObject = encoded.unpickle[OsmDenormalizedObject]
 
