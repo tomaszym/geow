@@ -51,6 +51,7 @@ pomIncludeRepository := { _ => false }
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots"),
+  "Sonatype Public" at "https://oss.sonatype.org/content/groups/public/", //maybe doppelt gemoppelt
   "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
   "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 )
@@ -61,6 +62,7 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-concurrent" % "7.1.2",
   "com.github.alexarchambault" %% "argonaut-shapeless_6.1" % "0.1.1",
   "org.json4s" %% "json4s-native" % "3.2.11",
+  "org.scodec" %% "scodec-core" % "1.8.3",
   "com.twitter" % "chill-bijection_2.11" % "0.7.2",
   //"org.scala-lang.modules" %% "scala-pickling" % "0.10.1",
   "org.apache.commons" % "commons-compress" % "1.8.1",

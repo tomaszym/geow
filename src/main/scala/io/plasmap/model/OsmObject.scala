@@ -65,7 +65,11 @@ case class OsmNode(id: OsmId, user: Option[OsmUser] = None, version:OsmVersion =
     StringBuilder.newBuilder.++=(id.toString).++=(",").++=(tagsToString).++=(",").++=(point.toString).toString()
   }
 }
-case class OsmWay(id: OsmId, user: Option[OsmUser] = None, version:OsmVersion = OsmVersion(), tags : List[OsmTag], nds : List[OsmId]) extends OsmObject{
+case class OsmWay( id: OsmId,
+                   user: Option[OsmUser] = None,
+                   version:OsmVersion = OsmVersion(),
+                   tags : List[OsmTag],
+                   nds : List[OsmId]) extends OsmObject{
   override def toString() = {
     StringBuilder.newBuilder.++=(id.toString).++=(",").++=(tagsToString).++=(",").++=(nds.mkString("[",",","]")).toString()
   }
