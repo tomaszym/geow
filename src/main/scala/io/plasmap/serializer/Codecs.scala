@@ -1,6 +1,6 @@
 package io.plasmap.serializer
 
-import io.plasmap.model.geometry.{LonLatPoint, HashPoint, Point}
+import io.plasmap.model.geometry._
 import io.plasmap.model._
 import scodec._
 import scodec.bits.BitVector
@@ -72,6 +72,22 @@ object Codecs {
 
   implicit val geometryPointCodec:Codec[Point] =
     Codec.coproduct[Point].choice //TODO: Maybe not choice
+
+  implicit val geometryLineStringCodec:Codec[LineString] =
+    ("coordinates" | listOfN(int32, double ~ double))
+      .as[LineString]
+
+  implicit def geometryCodec:Codec[Geometry] = lazily {
+    discriminated[Geometry].by(uint4)
+      .| (0) { case GeometryCollection(geos) =>  geos } (GeometryCollection.apply) (list(geometryCodec))
+      .| (1) { case LonLatPoint(lon, lat)   => (lon, lat) } { case (lon, lat) => LonLatPoint(lon, lat)} (double ~ double)
+      .| (2) { case HashPoint(hash)         => hash   }  (HashPoint.apply)         (int64)
+      .| (3) { case MultiPoint(coords)      => coords }  (MultiPoint.apply)        (list(double ~ double))
+      .| (4) { case LineString(coords)      => coords }  (LineString.apply)        (list(double ~ double))
+      .| (5) { case MultiLineString(coords) => coords }  (MultiLineString.apply)   (list(list(double ~ double)))
+      .| (6) { case Polygon(coords)         => coords }  (Polygon.apply)           (list(list(double ~ double)))
+      .| (7) { case MultiPolygon(coords)    => coords }  (MultiPolygon.apply)      (list(list(list(double ~ double))))
+  }
 
   implicit val osmNodeCodec:Codec[OsmNode] = (
       ("id"         | osmIdCodec                  ) ::
