@@ -10,10 +10,10 @@ Geow is a lightweight API for processing [OpenStreetMap](http://wiki.openstreetm
 * Support for geometric denormalization (i.e. Osm objects contain the full geometry)
 * GeoJSON serialization
 * Efficient and flexible geo-hashing utilities
+* Good binary Serialization using scodec
+* Geometry simplification using the Douglas-Peucker-Algorithm
 
 **Planned:**
-* Serialization optimization
-* Geometry optimization
 * Remove every last trace of Java code
 
 # Installation
