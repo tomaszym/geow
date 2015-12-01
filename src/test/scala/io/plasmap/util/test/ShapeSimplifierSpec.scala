@@ -2,7 +2,7 @@ package io.plasmap.util.test
 
 import io.plasmap.model.{OsmDenormalizedRelation, OsmVersion, OsmId, OsmDenormalizedWay}
 import io.plasmap.model.geometry.{MultiPolygon, LineString}
-import io.plasmap.serializer.{GeoJsonSerialiser, OsmDenormalisedGeoJSONBijections, OsmDenormalizedSerializer}
+import io.plasmap.serializer.{GeoJsonSerialiser, OsmDenormalisedGeoJSONBijections, OsmDenormalizedSerializerOld}
 import io.plasmap.util.ShapeSimplifier
 import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification

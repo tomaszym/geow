@@ -1,32 +1,42 @@
 package io.plasmap.serializer
 
-import io.plasmap.model._
-import com.twitter.chill.KryoInjection
+/**
+  *
+  * Created by mark on 01.12.15.
+  */
+
+import io.plasmap.model.OsmDenormalizedObject
+import scodec._
+import scodec.bits.BitVector
 
 import scala.util.Try
+import scalaz.\/
 
 object OsmDenormalizedSerializer {
 
-  /*import scala.pickling._
-  import scala.pickling.Defaults._
-  import scala.pickling.binary._*/
+  import Codecs._
 
-  //def fromBinary(encoded: Array[Byte]): OsmDenormalizedObject = encoded.unpickle[OsmDenormalizedObject]
-  def fromBinary(bytes: Array[Byte]): Try[OsmDenormalizedObject] = KryoInjection.invert(bytes).map(_.asInstanceOf[OsmDenormalizedObject])
+  def fromBinary(bytes:Array[Byte]): Try[OsmDenormalizedObject] = {
+    Try{
+      val bv:BitVector = BitVector(bytes)
+      osmDenormalizedObjectCodec
+        .decode(bv)
+        .require
+        .value
+    }
+  }
 
-  //def toBinary(decoded: OsmDenormalizedObject): Array[Byte] = decoded.pickle.value
-  def toBinary(item: OsmDenormalizedObject): Array[Byte] = KryoInjection(item)
-
-  def toGeoJsonString(osmDenormalizedObjects:List[OsmDenormalizedObject]):String = {
-    GeoJsonSerialiser.jsonFromFeatureCollection(
-      OsmDenormalisedGeoJSONBijections.denormalizedToGeoJson(osmDenormalizedObjects)
-    )
+  def toBinary(obj:OsmDenormalizedObject):Array[Byte] = {
+    osmDenormalizedObjectCodec
+      .encode(obj)
+      .require
+      .toByteArray
   }
 
   def toGeoJsonString(osmDenormalizedObject:OsmDenormalizedObject):String =
-  GeoJsonSerialiser.jsonFromFeature(
-    OsmDenormalisedGeoJSONBijections.denormalizedToGeoJson(osmDenormalizedObject)
-  )
+    GeoJsonSerialiser.jsonFromFeature(
+      OsmDenormalisedGeoJSONBijections.denormalizedToGeoJson(osmDenormalizedObject)
+    )
 
   def fromGeoJsonString(geojson: String):List[OsmDenormalizedObject] =
     GeoJsonSerialiser

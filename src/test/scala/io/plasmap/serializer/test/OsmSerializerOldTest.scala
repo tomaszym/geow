@@ -1,14 +1,25 @@
 package io.plasmap.serializer.test
 
-import io.plasmap.generator.OsmObjectGenerator
-import io.plasmap.model._
-import io.plasmap.serializer.OsmSerializer._
-import org.scalacheck.Gen._
-import org.scalacheck.{Arbitrary, Gen}
-import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
+import org.scalacheck.{ Arbitrary, Gen }
+import org.scalacheck._
+import org.scalacheck.Test._
+import Gen._
+import Arbitrary.arbitrary
+import org.specs2.runner._
+import org.junit.runner._
+import scala.util.Try
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import org.specs2.ScalaCheck
+import Prop.forAll
+import org.scalacheck.Arbitrary.arbitrary
+import io.plasmap.model._
+import io.plasmap.model.geometry._
+import io.plasmap.serializer.OsmSerializerOld._
+import io.plasmap.generator.OsmObjectGenerator
 
-class OsmSerializerTest extends Specification with ScalaCheck{
+class OsmSerializerOldTest extends Specification with ScalaCheck{
 
   sequential
   
@@ -23,7 +34,7 @@ class OsmSerializerTest extends Specification with ScalaCheck{
   def relationGenerator = Gen.resultOf[Int,OsmRelation](t => generator.generateRelation)
   implicit def osmRelationsArb = Arbitrary { relationGenerator }
   
-  "The OsmSerializer 2" should {
+  "The OsmSerializer" should {
 
     "serialize and deserialize an OsmNode object" ! check(prop{ osmNode: OsmNode =>
       {

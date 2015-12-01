@@ -62,5 +62,42 @@ class CodecsSpec extends Specification with ScalaCheck with StringMatchers {
       )
       roundtrip(r) must_== r
     }
+
+    "work forOsmDenormalizedNode" in {
+      val n = OsmDenormalizedNode(
+        OsmId(12L),
+        Some(OsmUser("eddybaby", 3820302898L)),
+        OsmVersion(),
+        List("key" -> "value", "key2" -> "value2").map((OsmTag.apply _).tupled),
+        HashPoint(12L)
+      )
+      roundtrip(n) must_== n
+    }
+
+    "work forOsmDenormalizedWay" in {
+      val w = OsmDenormalizedWay(
+        OsmId(12L),
+        Some(OsmUser("eddybaby", 3820302898L)),
+        OsmVersion(),
+        List("key" -> "value", "key2" -> "value2").map((OsmTag.apply _).tupled),
+        LineString(List((17.0, 11.2), (18.2, 14.7)))
+      )
+      roundtrip(w) must_== w
+    }
+
+    "work forOsmDenormalizedRelation" in {
+      val r = OsmDenormalizedRelation(
+        OsmId(12L),
+        Some(OsmUser("eddybaby", 3820302898L)),
+        OsmVersion(),
+        List("key" -> "value", "key2" -> "value2").map((OsmTag.apply _).tupled),
+        GeometryCollection(List(
+          LineString(List((22.1, 17.2), (18.0, 18.0))),
+          LonLatPoint(22.7, 88.2),
+          GeometryCollection(List(MultiPolygon(List(List(List((1.7, 2.8)))))))
+        ))
+      )
+      roundtrip(r) must_== r
+    }
   }
 }
