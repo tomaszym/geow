@@ -8,42 +8,42 @@ sealed abstract class Precision(val precision: PRECISION)
 object PrecisionYottaLow_2BIT extends Precision(PRECISION.YOTTA_LOW_2BIT)
 object PrecisionYottaLow_4BIT extends Precision(PRECISION.YOTTA_LOW_4BIT)
 object PrecisionYottaLow_6BIT extends Precision(PRECISION.YOTTA_LOW_6BIT)
+object PrecisionYottaLow_8BIT extends Precision(PRECISION.YOTTA_LOW_8BIT)
 
-object PrecisionUltraLow_630KM extends Precision(PRECISION.ULTRA_LOW_8BIT)
-object PrecisionUltraLow_10BIT extends Precision(PRECISION.ULTRA_LOW_10BIT)
+object PrecisionUltraLow_630KM extends Precision(PRECISION.ULTRA_LOW_630KM)
 object PrecisionUltraLow_12BIT extends Precision(PRECISION.ULTRA_LOW_12BIT)
 object PrecisionUltraLow_14BIT extends Precision(PRECISION.ULTRA_LOW_14BIT)
 
-object PrecisionVeryLow_80KM extends Precision(PRECISION.VERY_LOW_16BIT)
+object PrecisionVeryLow_80KM extends Precision(PRECISION.VERY_LOW_80KM)
 object PrecisionVeryLow_18BIT extends Precision(PRECISION.VERY_LOW_18BIT)
 
-object PrecisionLow_20KM extends Precision(PRECISION.LOW_20BIT)
+object PrecisionLow_20KM extends Precision(PRECISION.LOW_20KM)
 object PrecisionLow_22BIT extends Precision(PRECISION.LOW_22BIT)
 object PrecisionLow_24BIT extends Precision(PRECISION.LOW_24BIT)
-object PrecisionLow_26BIT extends Precision(PRECISION.LOW_26BIT)
 
-object PrecisionMedium_5KM extends Precision(PRECISION.MEDIUM_28BIT)
+object PrecisionMedium_5KM extends Precision(PRECISION.MEDIUM_5KM)
+object PrecisionMedium_28BIT extends Precision(PRECISION.MEDIUM_28BIT)
 object PrecisionMedium_30BIT extends Precision(PRECISION.MEDIUM_30BIT)
 object PrecisionMedium_32BIT extends Precision(PRECISION.MEDIUM_32BIT)
 object PrecisionMedium_34BIT extends Precision(PRECISION.MEDIUM_34BIT)
 
-object PrecisionHigh_100M extends Precision(PRECISION.HIGH_36BIT)
+object PrecisionHigh_100M extends Precision(PRECISION.HIGH_100M)
 object PrecisionHigh_38BIT extends Precision(PRECISION.HIGH_38BIT)
 object PrecisionHigh_40BIT extends Precision(PRECISION.HIGH_40BIT)
 object PrecisionHigh_42BIT extends Precision(PRECISION.HIGH_42BIT)
 object PrecisionHigh_44BIT extends Precision(PRECISION.HIGH_44BIT)
 object PrecisionHigh_46BIT extends Precision(PRECISION.HIGH_46BIT)
 
-object PrecisionVeryHigh_1M extends Precision(PRECISION.VERY_HIGH_48BIT)
+object PrecisionVeryHigh_1M extends Precision(PRECISION.VERY_HIGH_1M)
 object PrecisionVeryHigh_50BIT extends Precision(PRECISION.VERY_HIGH_50BIT)
 object PrecisionVeryHigh_52BIT extends Precision(PRECISION.VERY_HIGH_52BIT)
 object PrecisionVeryHigh_54BIT extends Precision(PRECISION.VERY_HIGH_54BIT)
 object PrecisionVeryHigh_56BIT extends Precision(PRECISION.VERY_HIGH_56BIT)
 object PrecisionVeryHigh_58BIT extends Precision(PRECISION.VERY_HIGH_58BIT)
 
-object PrecisionUltra_1CM extends Precision(PRECISION.ULTRA_60BIT)
+object PrecisionUltra_1CM extends Precision(PRECISION.ULTRA_1CM)
 object PrecisionUltra_62BIT extends Precision(PRECISION.ULTRA_62BIT)
-object PrecisionUltraHigh_1MM extends Precision(PRECISION.ULTRA_HIGH_64BIT)
+object PrecisionUltraHigh_1MM extends Precision(PRECISION.ULTRA_HIGH_1MM)
 
 case class GeoHash(precision: Precision) {
 
@@ -90,13 +90,14 @@ case class GeoHash(precision: Precision) {
 
 object GeoHash{
 
+  def yottaLow_8BIT= new GeoHash(PrecisionYottaLow_8BIT)
   def yottaLow_6BIT= new GeoHash(PrecisionYottaLow_6BIT)
   def yottaLow_4BIT= new GeoHash(PrecisionYottaLow_4BIT)
   def yottaLow_2BIT= new GeoHash(PrecisionYottaLow_2BIT)
 
   def ultraLow = new GeoHash(PrecisionUltraLow_630KM)
-  def ultraLow_10BIT = new GeoHash(PrecisionUltraLow_10BIT)
   def ultraLow_12BIT = new GeoHash(PrecisionUltraLow_12BIT)
+  def ultraLow_14BIT = new GeoHash(PrecisionUltraLow_14BIT)
 
   def veryLow = new GeoHash(PrecisionVeryLow_80KM)
   def veryLow_18BIT = new GeoHash(PrecisionVeryLow_18BIT)
@@ -104,9 +105,10 @@ object GeoHash{
   def low = new GeoHash(PrecisionLow_20KM)
   def low_22BIT = new GeoHash(PrecisionLow_22BIT)
   def low_24BIT = new GeoHash(PrecisionLow_24BIT)
-  def low_26BIT = new GeoHash(PrecisionLow_26BIT)
+
 
   def medium = new GeoHash(PrecisionMedium_5KM)
+  def medium_28BIT = new GeoHash(PrecisionMedium_28BIT)
   def medium_30BIT = new GeoHash(PrecisionMedium_30BIT)
   def medium_32BIT = new GeoHash(PrecisionMedium_32BIT)
   def medium_34BIT = new GeoHash(PrecisionMedium_34BIT)
