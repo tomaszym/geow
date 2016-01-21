@@ -24,7 +24,7 @@ class GeoHashSpec extends Specification with ScalaCheck {
   private val hashVeryHigh = new GeoHash(PrecisionVeryHigh_1M)
   private val hashUltra = new GeoHash(PrecisionUltra_1CM)
   private val hashUltraHigh = new GeoHash(PrecisionUltraHigh_1MM)
-  private val hashMediumLow = new GeoHash(PrecisionMediumLow_10KM)
+  private val hashMediumLow = new GeoHash(PrecisionLow_24BIT)
 
   val testCases = 100000
 

@@ -8,7 +8,7 @@ name := "geow"
 
 organization := "io.plasmap"
 
-version := "0.3.11-SNAPSHOT"
+version := "0.3.16-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 

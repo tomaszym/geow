@@ -34,15 +34,43 @@ public class GeoHashImpl {
 	private PRECISION precision;
 
 	public static enum PRECISION {
-		ULTRA_LOW_630KM(5),
-		VERY_LOW_80KM(8),
-		LOW_20KM(10),
-		MEDIUM_LOW_10KM(11),
-		MEDIUM_5KM(13),
-		HIGH_100M(18),
-		VERY_HIGH_1M(24),
-		ULTRA_1CM(30),
-		ULTRA_HIGH_1MM(32);
+		YOTTA_LOW_2BIT(1),
+		YOTTA_LOW_4BIT(2),
+		YOTTA_LOW_6BIT(3),
+
+		ULTRA_LOW_8BIT(4), //old old precision
+		ULTRA_LOW_10BIT(5),
+		ULTRA_LOW_12BIT(6),//old precision
+		ULTRA_LOW_14BIT(7),
+
+		VERY_LOW_16BIT(8),//old old precision---------------
+		VERY_LOW_18BIT(9),
+		LOW_20BIT(10),//old old precision------------
+		LOW_22BIT(11),
+		LOW_24BIT(12),//old precision
+		LOW_26BIT(13),
+
+		MEDIUM_28BIT(14),//old old precision------
+		MEDIUM_30BIT(15),
+		MEDIUM_32BIT(16),
+		MEDIUM_34BIT(17),
+
+		HIGH_36BIT(18),//old old  precision-------------
+		HIGH_38BIT(19),
+		HIGH_40BIT(20),
+		HIGH_42BIT(21),
+		HIGH_44BIT(22),
+		HIGH_46BIT(23),
+
+		VERY_HIGH_48BIT(24),//old old precision-----------------
+		VERY_HIGH_50BIT(25),
+		VERY_HIGH_52BIT(26),
+		VERY_HIGH_54BIT(27),
+		VERY_HIGH_56BIT(28),
+		VERY_HIGH_58BIT(29),
+		ULTRA_60BIT(30),//old old precision
+		ULTRA_62BIT(31),
+		ULTRA_HIGH_64BIT(32);//old old precision
 		
 		private final int numberOfBits;
 		
@@ -59,7 +87,7 @@ public class GeoHashImpl {
 	 * Creates a KeyGenerator with default precision.
 	 */
 	public GeoHashImpl() {
-		this(PRECISION.MEDIUM_5KM);
+		this(PRECISION.MEDIUM_28BIT);
 	}
 
 	/**
@@ -653,15 +681,15 @@ public class GeoHashImpl {
 	 * List<Long> ultraPrecisionPointList = new ArrayList<Long>();
 	 * // Fill with points.
 	 * 
-	 * KeyGenerator keyGenLow = new KeyGenerator(KeyGenerator.PRECISION.LOW_20KM);
-	 * KeyGenerator keyGenUltra = new KeyGenerator(KeyGenerator.PRECISION.ULTRA_1CM);
+	 * KeyGenerator keyGenLow = new KeyGenerator(KeyGenerator.PRECISION.LOW_20BIT);
+	 * KeyGenerator keyGenUltra = new KeyGenerator(KeyGenerator.PRECISION.ULTRA_60BIT);
 	 * 
 	 * // Get the encapsulating rectangle on the list of ultra precision points. 
 	 * long[] rectangle = keyGenUltra.getEncapsulatingRectangle(ultraPrecisionPointList);
 	 * 
 	 * // Convert to the target precision of your desired bounding boxes
-	 * long upperLeft = keyGenUltra.reducePrecisionParallel(rectangle[0], PRECISION.LOW_20KM);
-	 * long lowerRight = keyGenUltra.reducePrecisionParallel(rectangle[1], PRECISION.LOW_20KM);
+	 * long upperLeft = keyGenUltra.reducePrecisionParallel(rectangle[0], PRECISION.LOW_20BIT);
+	 * long lowerRight = keyGenUltra.reducePrecisionParallel(rectangle[1], PRECISION.LOW_20BIT);
 	 * long[] lowPrecisionRectangle = new long[]{upperLeft, lowerRight};
 	 * 
 	 * // Get the bounding boxes. 

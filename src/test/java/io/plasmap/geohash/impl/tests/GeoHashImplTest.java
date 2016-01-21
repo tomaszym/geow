@@ -61,10 +61,10 @@ public class GeoHashImplTest {
 
 	@Before
 	public void setUp() throws Exception {
-		keyGenLow = new GeoHashImpl(GeoHashImpl.PRECISION.LOW_20KM);
+		keyGenLow = new GeoHashImpl(GeoHashImpl.PRECISION.LOW_20BIT);
 		keyGenMedium = new GeoHashImpl(GeoHashImpl.PRECISION.MEDIUM_5KM);
-		keyGenHigh = new GeoHashImpl(GeoHashImpl.PRECISION.VERY_HIGH_1M);
-		keyGenUltra = new GeoHashImpl(GeoHashImpl.PRECISION.ULTRA_1CM);
+		keyGenHigh = new GeoHashImpl(GeoHashImpl.PRECISION.VERY_HIGH_48BIT);
+		keyGenUltra = new GeoHashImpl(GeoHashImpl.PRECISION.ULTRA_60BIT);
 	}
 
 	@Test
@@ -194,11 +194,11 @@ public class GeoHashImplTest {
 			long ultra = keyGenUltra.encodeParallel(longitude, latitude);
 
 			long reducedUltraToLow = keyGenUltra.reducePrecisionParallel(ultra,
-					PRECISION.LOW_20KM);
+					PRECISION.LOW_20BIT);
 			long reducedUltraToMedium = keyGenUltra.reducePrecisionParallel(
 					ultra, PRECISION.MEDIUM_5KM);
 			long reducedUltraToHigh = keyGenUltra.reducePrecisionParallel(
-					ultra, PRECISION.VERY_HIGH_1M);
+					ultra, PRECISION.VERY_HIGH_48BIT);
 
 			assertEquals(reducedUltraToLow + " does not match " + low,
 					reducedUltraToLow, low);
@@ -208,7 +208,7 @@ public class GeoHashImplTest {
 					reducedUltraToHigh, high);
 
 			long reducedHighToLow = keyGenUltra.reducePrecisionParallel(high,
-					PRECISION.LOW_20KM);
+					PRECISION.LOW_20BIT);
 			long reducedHighToMedium = keyGenUltra.reducePrecisionParallel(
 					high, PRECISION.MEDIUM_5KM);
 
@@ -218,7 +218,7 @@ public class GeoHashImplTest {
 					reducedHighToMedium, medium);
 
 			long reducedMediumToLow = keyGenUltra.reducePrecisionParallel(
-					medium, PRECISION.LOW_20KM);
+					medium, PRECISION.LOW_20BIT);
 
 			assertEquals(reducedMediumToLow + " does not match " + low,
 					reducedMediumToLow, low);
@@ -242,9 +242,9 @@ public class GeoHashImplTest {
 
 			Long[] lowRange = keyGenLow.getGeoIdRange(low);
 			long minLowNumberBoundingBox = keyGenLow.reducePrecisionParallel(
-					lowRange[0], PRECISION.LOW_20KM);
+					lowRange[0], PRECISION.LOW_20BIT);
 			long maxLowNumberBoundingBox = keyGenLow.reducePrecisionParallel(
-					lowRange[1], PRECISION.LOW_20KM);
+					lowRange[1], PRECISION.LOW_20BIT);
 
 			assertEquals(
 					"Min low number does not have the correct bounding box",
@@ -290,9 +290,9 @@ public class GeoHashImplTest {
 
 			Long[] highRange = keyGenHigh.getGeoIdRange(high);
 			long minHighNumberBoundingBox = keyGenHigh.reducePrecisionParallel(
-					highRange[0], PRECISION.VERY_HIGH_1M);
+					highRange[0], PRECISION.VERY_HIGH_48BIT);
 			long maxHighNumberBoundingBox = keyGenHigh.reducePrecisionParallel(
-					highRange[1], PRECISION.VERY_HIGH_1M);
+					highRange[1], PRECISION.VERY_HIGH_48BIT);
 
 			assertEquals(
 					"Min high number does not have the correct bounding box",
@@ -302,9 +302,9 @@ public class GeoHashImplTest {
 					high, maxHighNumberBoundingBox);
 
 			long hash1 = keyGenHigh.reducePrecisionParallel(highRange[0],
-					PRECISION.VERY_HIGH_1M);
+					PRECISION.VERY_HIGH_48BIT);
 			long hash2 = keyGenHigh.reducePrecisionParallel(highRange[1],
-					PRECISION.VERY_HIGH_1M);
+					PRECISION.VERY_HIGH_48BIT);
 			assertEquals("Bounding boxes of min and max range do not match",
 					hash1, hash2);
 		}
