@@ -1,6 +1,6 @@
 # Scala OpenStreetMap API
 
-[![Join the chat at https://gitter.im/plasmap/geow](https://badges.gitter.im/plasmap/geow.svg)](https://gitter.im/plasmap/geow?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/plasmap/plasmap](https://badges.gitter.im/plasmap/plasmap.svg)](https://gitter.im/plasmap/plasmap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/plasmap/geow.svg?branch=master)](https://travis-ci.org/plasmap/geow)
 [![Coverage Status](https://coveralls.io/repos/plasmap/geow/badge.svg)](https://coveralls.io/r/plasmap/geow)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
