@@ -36,29 +36,29 @@ class OsmSerializerOldTest extends Specification with ScalaCheck{
   
   "The OsmSerializer" should {
 
-    "serialize and deserialize an OsmNode object" ! check(prop{ osmNode: OsmNode =>
+    "serialize and deserialize an OsmNode object" ! forAll { osmNode: OsmNode =>
       {
         val serialized = toBinary(osmNode)
         val deserialized = fromBinary(serialized)
         deserialized must beSuccessfulTry(osmNode)
       }
-    })
+    }
     
-    "serialize and deserialize an OsmWay object" ! check(prop{ osmWay: OsmWay =>
+    "serialize and deserialize an OsmWay object" ! forAll { osmWay: OsmWay =>
       {
         val serialized = toBinary(osmWay)
         val deserialized = fromBinary(serialized)
         deserialized must beSuccessfulTry(osmWay)
       }
-    })
+    }
     
-    "serialize and deserialize an OsmRelation object" ! check(prop{ osmRelation: OsmRelation =>
+    "serialize and deserialize an OsmRelation object" ! forAll { osmRelation: OsmRelation =>
       {
         val serialized = toBinary(osmRelation)
         val deserialized = fromBinary(serialized)
         deserialized must beSuccessfulTry(osmRelation)
       }
-    })
+    }
   }
   
 

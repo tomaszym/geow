@@ -5,8 +5,10 @@ import io.plasmap.model._
 import io.plasmap.serializer.OsmSerializer._
 import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Prop.forAll
 import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
+
 
 class OsmSerializerTest extends Specification with ScalaCheck{
 
@@ -25,29 +27,29 @@ class OsmSerializerTest extends Specification with ScalaCheck{
   
   "The OsmSerializer 2" should {
 
-    "serialize and deserialize an OsmNode object" ! check(prop{ osmNode: OsmNode =>
+    "serialize and deserialize an OsmNode object" ! forAll { osmNode: OsmNode =>
       {
         val serialized = toBinary(osmNode)
         val deserialized = fromBinary(serialized)
         deserialized must beSuccessfulTry(osmNode)
       }
-    })
+    }
     
-    "serialize and deserialize an OsmWay object" ! check(prop{ osmWay: OsmWay =>
+    "serialize and deserialize an OsmWay object" ! forAll { osmWay: OsmWay =>
       {
         val serialized = toBinary(osmWay)
         val deserialized = fromBinary(serialized)
         deserialized must beSuccessfulTry(osmWay)
       }
-    })
+    }
     
-    "serialize and deserialize an OsmRelation object" ! check(prop{ osmRelation: OsmRelation =>
+    "serialize and deserialize an OsmRelation object" ! forAll { osmRelation: OsmRelation =>
       {
         val serialized = toBinary(osmRelation)
         val deserialized = fromBinary(serialized)
         deserialized must beSuccessfulTry(osmRelation)
       }
-    })
+    }
   }
   
 

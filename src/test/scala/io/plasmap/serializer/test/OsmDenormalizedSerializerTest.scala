@@ -9,6 +9,7 @@ import org.scalacheck.{Arbitrary, Gen}
 import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
 import org.specs2.runner._
+import org.scalacheck.Prop.forAll
 
 @RunWith(classOf[JUnitRunner])
 class OsmDenormalizedSerializerTest extends Specification with ScalaCheck {
@@ -29,29 +30,29 @@ class OsmDenormalizedSerializerTest extends Specification with ScalaCheck {
   
   "The OsmDenormalizedSerializer 2" should {
 
-    "serialize and deserialize an OsmDenormalizedNode object" ! check(prop{ osmDenormalizedNode: OsmDenormalizedNode =>
+    "serialize and deserialize an OsmDenormalizedNode object" ! forAll { osmDenormalizedNode: OsmDenormalizedNode =>
       {
         val serialized = toBinary(osmDenormalizedNode)
         val deserialized = fromBinary(serialized)
         deserialized must beSuccessfulTry(osmDenormalizedNode)
       }
-    })
+    }
 
-    "serialize and deserialize an OsmDenormalizedWay object" ! check(prop{ osmDenormalizedWay:OsmDenormalizedWay =>
+    "serialize and deserialize an OsmDenormalizedWay object" ! forAll { osmDenormalizedWay:OsmDenormalizedWay =>
     {
       val serialized = toBinary(osmDenormalizedWay)
       val deserialized = fromBinary(serialized)
       deserialized must beSuccessfulTry(osmDenormalizedWay)
     }
-    })
+    }
 
-    "serialize and deserialize an OsmDenormalizedRelation object" ! check(prop{ osmDenormalizedRelation: OsmDenormalizedRelation =>
+    "serialize and deserialize an OsmDenormalizedRelation object" ! forAll { osmDenormalizedRelation: OsmDenormalizedRelation =>
       {
         val serialized = toBinary(osmDenormalizedRelation)
         val deserialized = fromBinary(serialized)
         deserialized must beSuccessfulTry(osmDenormalizedRelation)
       }
-    })
+    }
 
   }
 

@@ -170,11 +170,11 @@ class OsmPbfParserSpec extends Specification with ScalaCheck {
   }
 
   "The OsmPbfParser" should {
-    val folder = new TemporaryFolder()
-    folder.create()
-    val parserPbf = OsmPbfParser(makePbfFile(folder).getAbsolutePath)
 
     "parse an Osm pbf" in {
+      val folder = new TemporaryFolder()
+      folder.create()
+      val parserPbf = OsmPbfParser(makePbfFile(folder).getAbsolutePath)
 
       parserPbf.hasNext must be_==(true)
       val n = parserPbf.next
@@ -192,13 +192,12 @@ class OsmPbfParserSpec extends Specification with ScalaCheck {
 
       parserPbf.hasNext must be_==(true)
       val r = parserPbf.next
+      folder.delete()
       r.get.id mustEqual relation.id
       r.get.user mustEqual relation.user
       r.get.version mustEqual relation.version
       r.get.tags must containAllOf(relation.tags)
     }
-
-    folder.delete()
   }
 
 }

@@ -10,7 +10,7 @@ organization := "io.plasmap"
 
 version := "0.3.17-SNAPSHOT"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.8"
 
 homepage := Some(url("http://www.plasmap.io"))
 
@@ -57,10 +57,10 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.spire-math" %% "spire" % "0.11.0",
-  "org.scalaz" %% "scalaz-core" % "7.1.2",
-  "org.scalaz" %% "scalaz-concurrent" % "7.1.2",
-  "com.github.alexarchambault" %% "argonaut-shapeless_6.1" % "0.1.1",
+  "org.spire-math" %% "spire" % "0.13.0",
+  "org.scalaz" %% "scalaz-core" % "7.2.2",
+  "org.scalaz" %% "scalaz-concurrent" % "7.2.2",
+  "com.github.alexarchambault" %% "argonaut-shapeless_6.1" % "1.1.0",
   "org.json4s" %% "json4s-native" % "3.2.11",
   "org.scodec" %% "scodec-core" % "1.8.3",
   "com.twitter" % "chill-bijection_2.11" % "0.7.2",
@@ -72,8 +72,10 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.7",
   "org.hamcrest" % "hamcrest-all" % "1.3" % "test",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.11.6" % "test",
-  "org.specs2" %% "specs2" % "2.4.11" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
+  "org.specs2" %% "specs2-core" % "3.8.8" % "test",
+  "org.specs2" %% "specs2-scalacheck" % "3.8.8" % "test",
+  "org.specs2" %% "specs2-junit" % "3.8.8" % "test",
   "org.mockito" % "mockito-core" % "1.9.5" % "test",
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "junit" % "junit" % "4.11" % "test",
