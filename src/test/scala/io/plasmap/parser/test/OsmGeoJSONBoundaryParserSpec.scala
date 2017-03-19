@@ -3,10 +3,8 @@ package io.plasmap.parser.test
 import java.io.ByteArrayInputStream
 
 import io.plasmap.parser.impl.{Boundary, OsmGeoJSONBoundaryParser}
-import io.plasmap.parser.impl.{Boundary, OsmGeoJSONBoundaryParser}
 import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
-import argonaut._, Argonaut._
 
 import scala.io.Source
 
@@ -36,14 +34,12 @@ class OsmGeoJSONBoundaryParserSpec extends Specification with ScalaCheck {
     """.stripMargin
 
     "be able to parse a boundary" in {
-      import OsmGeoJSONBoundaryParser._
-      val de = boundaryString.decodeOption[Boundary]
-      de must beSome
+      OsmGeoJSONBoundaryParser.parseBoundary(boundaryString) must beRight
     }
 
     "transform boundaries to features" in {
       import OsmGeoJSONBoundaryParser._
-      val f = boundaryToFeature(boundaryString.decodeOption[Boundary].get)
+      val f = boundaryToFeature(OsmGeoJSONBoundaryParser.parseBoundary(boundaryString).toOption.get)
       f.properties("name") must beEqualTo("Broich")
     }
 

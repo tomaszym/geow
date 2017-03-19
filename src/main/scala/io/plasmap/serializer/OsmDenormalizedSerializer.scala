@@ -10,7 +10,6 @@ import scodec._
 import scodec.bits.BitVector
 
 import scala.util.Try
-import scalaz.\/
 
 object OsmDenormalizedSerializer {
 

@@ -8,9 +8,9 @@ name := "geow"
 
 organization := "io.plasmap"
 
-version := "0.3.17-SNAPSHOT"
+version := "0.4.0-SNAPSHOT"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
 
 homepage := Some(url("http://www.plasmap.io"))
 
@@ -58,20 +58,23 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.spire-math" %% "spire" % "0.13.0",
-  "org.scalaz" %% "scalaz-core" % "7.2.2",
-  "org.scalaz" %% "scalaz-concurrent" % "7.2.2",
-  "com.github.alexarchambault" %% "argonaut-shapeless_6.1" % "1.1.0",
-  "org.json4s" %% "json4s-native" % "3.2.11",
-  "org.scodec" %% "scodec-core" % "1.8.3",
+  "io.circe" %% "circe-core" % "0.7.0",
+  "io.circe" %% "circe-generic" % "0.7.0",
+  "io.circe" %% "circe-parser" % "0.7.0",
+//  "org.scalaz" %% "scalaz-core" % "7.2.2",
+//  "org.scalaz" %% "scalaz-concurrent" % "7.2.2",
+//  "com.github.alexarchambault" %% "argonaut-shapeless_6.2" % "1.2.0-M4",
+//  "org.json4s" %% "json4s-native" % "3.2.11",
+  "org.scodec" %% "scodec-core" % "1.10.3",
   "com.twitter" % "chill-bijection_2.11" % "0.7.2",
   "com.esotericsoftware.kryo" % "kryo" % "2.24.0",
   //"org.scala-lang.modules" %% "scala-pickling" % "0.10.1",
   "org.apache.commons" % "commons-compress" % "1.8.1",
   "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
-  "joda-time" % "joda-time" % "2.3",
-  "org.joda" % "joda-convert" % "1.7",
+//  "joda-time" % "joda-time" % "2.9.2",
+//  "org.joda" % "joda-convert" % "1.8.1",
   "org.hamcrest" % "hamcrest-all" % "1.3" % "test",
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
   "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
   "org.specs2" %% "specs2-core" % "3.8.8" % "test",
   "org.specs2" %% "specs2-scalacheck" % "3.8.8" % "test",

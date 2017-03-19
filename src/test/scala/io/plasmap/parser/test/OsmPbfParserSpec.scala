@@ -4,28 +4,23 @@ package io.plasmap.parser.test
  * Created by jm on 15/07/15.
  */
 
-import java.nio.charset.{StandardCharsets}
-import java.nio.file.{StandardOpenOption, Files}
+import java.nio.charset.StandardCharsets
+import java.nio.file.{Files, StandardOpenOption}
 
 import io.plasmap.model.{OsmRoleOuter, OsmTypeWay}
-import org.specs2.mutable.Specification
-
 import java.io.File
+
 import org.openstreetmap.osmosis.core.Osmosis
 import org.junit.rules.TemporaryFolder
-
-import org.specs2.runner._
-import org.junit.runner._
-
 import org.specs2.ScalaCheck
-
 import io.plasmap.parser.impl.OsmPbfParser
 import io.plasmap.parser.impl.OsmXmlParser._
 import io.plasmap.model._
 import io.plasmap.model.geometry.Point
+import org.scalatest._
 
-@RunWith(classOf[JUnitRunner])
-class OsmPbfParserSpec extends Specification with ScalaCheck {
+//@RunWith(classOf[JUnitRunner])
+class OsmPbfParserSpec extends WordSpec with MustMatchers with  ScalaCheck {
 
   val xml =
     <osm version="0.6" generator="CGImap 0.3.3 (4443 thorn-02.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
@@ -176,27 +171,27 @@ class OsmPbfParserSpec extends Specification with ScalaCheck {
       folder.create()
       val parserPbf = OsmPbfParser(makePbfFile(folder).getAbsolutePath)
 
-      parserPbf.hasNext must be_==(true)
+      parserPbf.hasNext must ===(true)
       val n = parserPbf.next
       n.get.id mustEqual node.id
       n.get.user mustEqual node.user
       n.get.version mustEqual node.version
-      n.get.tags must containAllOf(node.tags)
+      n.get.tags.toSet must ===(node.tags.toSet)
 
-      parserPbf.hasNext must be_==(true)
+      parserPbf.hasNext must ===(true)
       val w = parserPbf.next
       w.get.id mustEqual way.id
       w.get.user mustEqual way.user
       w.get.version mustEqual way.version
-      w.get.tags must containAllOf(way.tags)
+      w.get.tags.toSet must ===(way.tags.toSet)
 
-      parserPbf.hasNext must be_==(true)
+      parserPbf.hasNext must ===(true)
       val r = parserPbf.next
       folder.delete()
       r.get.id mustEqual relation.id
       r.get.user mustEqual relation.user
       r.get.version mustEqual relation.version
-      r.get.tags must containAllOf(relation.tags)
+      r.get.tags.toSet ===(relation.tags.toSet)
     }
   }
 

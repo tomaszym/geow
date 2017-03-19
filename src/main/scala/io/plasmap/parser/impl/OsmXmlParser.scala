@@ -8,13 +8,18 @@ import scala.xml._
 import scala.xml.pull._
 import scala.io.Source
 import io.plasmap.model._
-import org.joda.time.format.ISODateTimeFormat
-import scala.util.{Failure, Try, Success}
+
+import scala.util.{Failure, Success, Try}
 import scala.collection.mutable.ListBuffer
 import io.plasmap.model.geometry.Point
+
 import scala.io.Codec
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream
 import java.io.FileInputStream
+import java.time.{LocalDateTime, ZoneOffset}
+import java.time.format.DateTimeFormatter
+import java.time.temporal.{ChronoField, TemporalField, TemporalQueries, TemporalQuery}
+
 import scala.xml.NodeSeq.seqToNodeSeq
 import io.plasmap.parser.{OsmDenormalizedParser, OsmParser}
 
@@ -120,8 +125,8 @@ case class OsmXmlParser(source: Source) extends OsmParser {
 
 object OsmXmlParser {
 
-  val XML_DATE_INPUT_FORMAT = ISODateTimeFormat.dateTimeNoMillis()
-  val XML_DATE_OUTPUT_FORMAT = ISODateTimeFormat.dateTime()
+  val XML_DATE_INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX")
+  val XML_DATE_OUTPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 
   def parseNd(attr: MetaData): Try[OsmId] = Try(OsmId(attr("ref").text.toLong))
 
@@ -207,9 +212,9 @@ object OsmXmlParser {
 
   def convertXmlDateToLong(xmlTime: String): Long = {
 
-    val parseIntent = Try(XML_DATE_INPUT_FORMAT.parseDateTime(xmlTime).getMillis)
+    val parseIntent = Try(LocalDateTime.from(XML_DATE_INPUT_FORMAT.parse(xmlTime)).toEpochSecond(ZoneOffset.UTC))
 
-    val millis = parseIntent.toOption.getOrElse(System.currentTimeMillis)
+    val millis = parseIntent.toOption.map(_ * 1000).getOrElse(System.currentTimeMillis)
     millis
   }
 

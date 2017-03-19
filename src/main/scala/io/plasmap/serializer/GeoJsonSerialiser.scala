@@ -1,106 +1,105 @@
 package io.plasmap.serializer
 
-import argonaut._, Argonaut._, Shapeless._
+import io.circe.Decoder.Result
+import io.circe.Json.JObject
+import io.circe._
+import io.circe.syntax._
+import io.circe.parser._
+import io.circe.generic.semiauto._
 import io.plasmap.model.geometry._
 
-/**
- * Created by mark on 12.05.15.
- */
 object GeoJsonSerialiser {
 
-  private implicit def pointDecode: DecodeJson[Point] =
-    DecodeJson( c ⇒ for { lonLat ← (c --\ "coordinates").as[(Double, Double)]} yield LonLatPoint(lonLat._1, lonLat._2))
+  implicit lazy val  pointDecode: Decoder[Point] = new Decoder[Point] {
+    override def apply(c: HCursor): Result[Point] = c.get[(Double,Double)]("coordinates").map(lonLat => LonLatPoint(lonLat._1, lonLat._2))
+  }
 
   def coordinatesFromPoint(p:Point) = p match {
     case p:LonLatPoint ⇒ (p.lon, p.lat)
     case p:HashPoint ⇒ (p.lon, p.lat)
   }
 
-  implicit def pointEncode: EncodeJson[Point] =
-    EncodeJson((p:Point) ⇒ ("coordinates" := coordinatesFromPoint(p)) ->: ("type" := "Point") ->: jEmptyObject)
+  implicit lazy val  pointEncode: ObjectEncoder[Point] = new ObjectEncoder[Point] {
+    override def encodeObject(a: Point): JsonObject = JsonObject.fromMap(Map(
+      "type" -> Json.fromString("Point"),
+      "coordinates" -> Json.arr(Json.fromDoubleOrNull(a.lon), Json.fromDoubleOrNull(a.lat))
+    ))
+}
 
-  implicit def multiPointDecode: DecodeJson[MultiPoint] =
-    jdecode1L(MultiPoint.apply)("coordinates")
+  implicit lazy val  multiPointDecode = deriveDecoder[MultiPoint]
 
-  implicit def multiPointEncode: EncodeJson[MultiPoint] =
-    EncodeJson((mp:MultiPoint) ⇒ ("coordinates" := mp.coordinates) ->: ("type" := "MultiPoint") ->: jEmptyObject)
+  implicit lazy val  multiPointEncode = deriveEncoder[MultiPoint].mapJsonObject(_.+:("type" -> Json.fromString("MultiPoint")))
 
-  implicit def lineStringDecode: DecodeJson[LineString] =
-    jdecode1L(LineString.apply)("coordinates")
+  implicit lazy val  lineStringDecode = deriveDecoder[LineString]
 
-  implicit def lineStringEncode: EncodeJson[LineString] =
-    EncodeJson((ls:LineString) ⇒ ("coordinates" := ls.coordinates) ->: ("type" := "LineString") ->: jEmptyObject)
+  implicit lazy val  lineStringEncode = deriveEncoder[LineString].mapJsonObject(_.+:("type" -> Json.fromString("LineString")))
 
-  implicit def multiLineStringDecode: DecodeJson[MultiLineString] =
-    jdecode1L(MultiLineString.apply)("coordinates")
+  implicit lazy val  multiLineStringDecode = deriveDecoder[MultiLineString]
 
-  implicit def multiLineStringEncode: EncodeJson[MultiLineString] =
-    EncodeJson((mls:MultiLineString) ⇒ ("coordinates" := mls.coordinates) ->: ("type" := "MultiLineString") ->: jEmptyObject)
+  implicit lazy val  multiLineStringEncode = deriveEncoder[MultiLineString].mapJsonObject(_.+:("type" -> Json.fromString("MultiLineString")))
 
-  implicit def polygonDecode: DecodeJson[Polygon] =
-    jdecode1L(Polygon.apply)("coordinates")
+  implicit lazy val polygonDecode = deriveDecoder[Polygon]
 
-  implicit def polygonEncode: EncodeJson[Polygon] =
-    EncodeJson((p:Polygon) ⇒ ("coordinates" := p.coordinates) ->: ("type" := "Polygon") ->: jEmptyObject)
+  implicit lazy val polygonEncode = deriveEncoder[Polygon].mapJsonObject(_.+:("type" -> Json.fromString("Polygon")))
 
-  implicit def multiPolygonDecode: DecodeJson[MultiPolygon] =
-    jdecode1L(MultiPolygon.apply)("coordinates")
+  implicit lazy val multiPolygonDecode = deriveDecoder[MultiPolygon]
 
-  implicit def multiPolygonEncode: EncodeJson[MultiPolygon] =
-    EncodeJson((p:MultiPolygon) ⇒ ("coordinates" := p.coordinates) ->: ("type" := "MultiPolygon") ->: jEmptyObject)
+  implicit lazy val multiPolygonEncode = deriveEncoder[MultiPolygon].mapJsonObject(_.+:("type" -> Json.fromString("MultiPolygon")))
 
-  implicit def geometryCollectionDecode: DecodeJson[GeometryCollection] =
-    jdecode1L(GeometryCollection.apply)("geometries")
+  implicit lazy val geometryEncoder = new ObjectEncoder[Geometry] {
 
-  implicit def geometryCollectionEncode: EncodeJson[GeometryCollection] =
-    EncodeJson((p:GeometryCollection) ⇒ ("geometries" := p.geometries) ->: ("type" := "GeometryCollection") ->: jEmptyObject)
-
-  implicit def geometryCodec:CodecJson[Geometry] =
-    CodecJson({
-      case p:Point               ⇒ p.asJson
-      case mp:MultiPoint         ⇒ mp.asJson
-      case ls:LineString         ⇒ ls.asJson
-      case mls:MultiLineString   ⇒ mls.asJson
-      case poly:Polygon          ⇒ poly.asJson
-      case mp:MultiPolygon       ⇒ mp.asJson
-      case gc:GeometryCollection ⇒ gc.asJson
-    },
-    j ⇒ {
-      val typ = (j --\ "type").as[String].getOr("Unknown geometry type")
-      typ match {
-        case "Point"                 ⇒ pointDecode(j)             .map[Geometry](identity)
-        case "MultiPoint"            ⇒ multiPointDecode(j)        .map[Geometry](identity)
-        case "LineString"            ⇒ lineStringDecode(j)        .map[Geometry](identity)
-        case "MultiLineString"       ⇒ multiLineStringDecode(j)   .map[Geometry](identity)
-        case "Polygon"               ⇒ polygonDecode(j)           .map[Geometry](identity)
-        case "MultiPolygon"          ⇒ multiPolygonDecode(j)      .map[Geometry](identity)
-        case "GeometryCollection"    ⇒ geometryCollectionDecode(j).map[Geometry](identity)
+    override def encodeObject(a: Geometry): JsonObject = a match {
+      case p:Point               ⇒ p.asJsonObject
+      case mp:MultiPoint         ⇒ mp.asJsonObject
+      case ls:LineString         ⇒ ls.asJsonObject
+      case mls:MultiLineString   ⇒ mls.asJsonObject
+      case poly:Polygon          ⇒ poly.asJsonObject
+      case mp:MultiPolygon       ⇒ mp.asJsonObject
+      case gc:GeometryCollection ⇒ gc.asJsonObject
+    }
+  }
+  implicit lazy val geometryDecoder = new Decoder[Geometry] {
+    override def apply(c: HCursor): Result[Geometry] = {
+      c.get[String]("type").flatMap {
+        case "Point" ⇒ pointDecode.decodeJson(c.value)
+        case "MultiPoint" ⇒ multiPointDecode.decodeJson(c.value)
+        case "LineString" ⇒ lineStringDecode.decodeJson(c.value)
+        case "MultiLineString" ⇒ multiLineStringDecode.decodeJson(c.value)
+        case "Polygon" ⇒ polygonDecode.decodeJson(c.value)
+        case "MultiPolygon" ⇒ multiPolygonDecode.decodeJson(c.value)
+        case "GeometryCollection" ⇒ geometryCollectionDecode.decodeJson(c.value)
       }
     }
-    )
+  }
 
-  implicit def featureEncode:EncodeJson[Feature] =
-    EncodeJson((f:Feature) ⇒ ("properties" := f.properties) ->: ("geometry" := f.geometry) ->: ("type" := "Feature") ->: jEmptyObject)
+  implicit lazy val geometryCollectionDecode: Decoder[GeometryCollection] = deriveDecoder[GeometryCollection]
 
-  implicit def featureDecode:DecodeJson[Feature] =
-    DecodeJson( c ⇒ for {
-      geometry ← (c --\ "geometry").as[Geometry]
-      properties ← (c --\ "properties").as[Option[Map[String, Json]]]
-    } yield Feature(geometry, properties.map(_.mapValues{
-        case str if str.isString ⇒ str.toString().tail.dropRight(1)
-        case other ⇒ other.toString()
-      }).getOrElse(Map())))
+  implicit lazy val geometryCollectionEncode: ObjectEncoder[GeometryCollection] = deriveEncoder[GeometryCollection].mapJsonObject(_.+:("type" -> Json.fromString("GeometryCollection")))
 
-  implicit def FeatureCollectionDecode:DecodeJson[FeatureCollection] = jdecode1L(FeatureCollection.apply)("features")
 
-  implicit def FeatureCollectionEncode:EncodeJson[FeatureCollection] = jencode1L((fc:FeatureCollection) ⇒ fc.features)("features")
+  implicit lazy val featureEncoder = deriveEncoder[Feature].mapJsonObject(_.+:("type" -> Json.fromString("Feature")))
+  implicit lazy val featureDecoder = deriveDecoder[Feature].prepare { c =>
+    c.downField("properties").withFocus { _.mapObject { o =>
+      JsonObject.fromMap(o.toMap.mapValues { j =>
+        implicit def jsontostringjson(s: String): Json = Json.fromString(s)
+        j.fold[Json]("null", _.toString, _.toString, s => s, _.toString, _.toString)
+//        Json.fromString(j.toString)
+      })
+    }
 
-  def geometryFromJSON(json:String)  = json.decodeOption[Geometry]
-  def jsonFromGeometry(geometry:Geometry) = geometry.asJson.nospaces
-  def jsonFromFeature(feature:Feature) = feature.asJson.nospaces
-  def jsonFromFeatureCollection(featureCollection:FeatureCollection) = featureCollection.asJson.nospaces
-  def featureFromJSON(json:String) = json.decodeOption[Feature]
-  def featureCollectionFromJSONEither(json:String) = json.decodeEither[FeatureCollection]
-  def featureCollectionFromJSON(json:String):Option[FeatureCollection] = json.decodeOption[FeatureCollection]
+    }.up
+  }
+
+  implicit lazy val FeatureCollectionDecode: Decoder[FeatureCollection] = deriveDecoder[FeatureCollection]
+
+  implicit lazy val FeatureCollectionEncode: ObjectEncoder[FeatureCollection] = deriveEncoder[FeatureCollection]
+
+  def geometryFromJSON(json:String)  = parse(json).toOption.flatMap(_.as[Geometry].toOption)
+  def jsonFromGeometry(geometry:Geometry) = geometry.asJson.noSpaces
+  def jsonFromFeature(feature:Feature) = feature.asJson.noSpaces
+  def jsonFromFeatureCollection(featureCollection:FeatureCollection) = featureCollection.asJson.noSpaces
+  def featureFromJSON(json:String) = parse(json).toOption.flatMap(_.as[Feature].toOption)
+  def featureCollectionFromJSONEither(json:String) = parse(json).flatMap(_.as[FeatureCollection])
+  def featureCollectionFromJSON(json:String):Option[FeatureCollection] = parse(json).toOption.flatMap(_.as[FeatureCollection].toOption)
 
 }

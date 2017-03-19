@@ -7,7 +7,6 @@ import io.plasmap.model.geometry._
 import org.specs2.ScalaCheck
 import org.specs2.matcher.StringMatchers
 import org.specs2.mutable.Specification
-import argonaut._, Argonaut._
 import scodec.Attempt.Successful
 import scodec.Codec
 import scodec.bits.BitVector

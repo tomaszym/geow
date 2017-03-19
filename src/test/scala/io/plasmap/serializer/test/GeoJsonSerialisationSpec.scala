@@ -7,7 +7,6 @@ import io.plasmap.serializer.GeoJsonSerialiser
 import org.specs2.ScalaCheck
 import org.specs2.matcher.StringMatchers
 import org.specs2.mutable.Specification
-import argonaut._, Argonaut._
 
 /**
  * Created by mark on 12.05.15.
@@ -118,8 +117,9 @@ class GeoJsonSerialisationSpec extends Specification with ScalaCheck with String
                       |        "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
                       |        "properties": {"string": "value0", "int": 1, "float": 1.2}
                       |        }""".stripMargin
+      GeoJsonSerialiser.featureDecoder.decodeJson(io.circe.parser.parse(feature).toOption.get) must beRight
       GeoJsonSerialiser.featureFromJSON(feature) mustEqual
-        Some(Feature(Point(102f, 0.5f), Map("string" → "value0", "int" → "1", "float" → "1.2")))
+        Some(Feature(Point(102f, 0.5f), Map("float" → "1.2", "int" → "1", "string" → "value0")))
 
     }
   }
@@ -163,7 +163,7 @@ class GeoJsonSerialisationSpec extends Specification with ScalaCheck with String
           |       ]
           |     }
         """.stripMargin
-      GeoJsonSerialiser.featureCollectionFromJSONEither(example).toEither must beRight
+      GeoJsonSerialiser.featureCollectionFromJSONEither(example) must beRight
     }
   }
 

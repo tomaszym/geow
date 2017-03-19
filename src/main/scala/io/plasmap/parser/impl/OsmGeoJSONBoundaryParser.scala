@@ -1,17 +1,18 @@
 package io.plasmap.parser.impl
 
+import io.circe.Decoder.Result
 import io.plasmap.serializer.OsmDenormalisedGeoJSONBijections.OsmPropertyNames
 import io.plasmap.model.OsmDenormalizedObject
 import io.plasmap.model.geometry._
 import io.plasmap.parser.OsmDenormalizedParser
 import io.plasmap.serializer.OsmDenormalisedGeoJSONBijections._
-import argonaut._, Argonaut._, Shapeless._
 
 import scala.io.{Codec, Source}
+import io.circe._
+import io.circe.syntax._
+import io.circe.generic.semiauto._
 
-/**
- * Created by mark on 14.05.15.
- */
+
 final case class Boundary(id:Int,name:String,localname:String,SRID:String, adminLevel:Int, tags:Map[String, String], geometry:GeometryCollection)
 final case class Boundaries(boundaries:List[Boundary])
 
@@ -20,7 +21,7 @@ case class OsmGeoJSONBoundaryParser(source:Source) extends OsmDenormalizedParser
 
   val json = source.mkString
 
-  private val iterator = json.decodeOption[Boundaries]
+  private val iterator = parser.parse(json).flatMap(_.asJson.as[Boundaries])
     .getOrElse(Boundaries(Nil))
     .boundaries
     .iterator
@@ -31,28 +32,32 @@ case class OsmGeoJSONBoundaryParser(source:Source) extends OsmDenormalizedParser
 
 object OsmGeoJSONBoundaryParser {
   def apply(fileName: String)(implicit codec:Codec): OsmGeoJSONBoundaryParser = OsmGeoJSONBoundaryParser(Source.fromFile(fileName)(codec))
-  implicitly[DecodeJson[List[List[List[Point]]]]]
+//  implicitly[DecodeJson[List[List[List[Point]]]]]
 
-  def getGeometryFromType(typ:String, c:HCursor):DecodeResult[GeometryCollection] = {
-    val a: ACursor = c --\ "coordinates"
+  def getGeometryFromType(typ:String, c:HCursor) = {
     typ match {
-      case "MultiPolygon" ⇒ a.as[List[List[List[(Double, Double)]]]].map[MultiPolygon](MultiPolygon).map[GeometryCollection](mp ⇒ GeometryCollection(List(mp)))
-      case "LineString" ⇒ a.as[List[(Double, Double)]].map[LineString](LineString).map[GeometryCollection](ls ⇒ GeometryCollection(List(ls)))
+      case "MultiPolygon" ⇒ c.get[List[List[List[(Double, Double)]]]]("coordinates").map[MultiPolygon](MultiPolygon).map[GeometryCollection](mp ⇒ GeometryCollection(List(mp)))
+      case "LineString" ⇒ c.get[List[(Double, Double)]]("coordinates").map[LineString](LineString).map[GeometryCollection](ls ⇒ GeometryCollection(List(ls)))
     }
   }
 
-  implicit def BoundaryDecodeJson:DecodeJson[Boundary]  = DecodeJson( c ⇒ for {
-    id ← (c --\ "id").as[Int]
-    name ← (c --\ "name").as[String]
-    localname ← (c --\ "localname").as[String]
-    srid ← (c --\ "SRID").as[String]
-    adminLevel ← (c --\ "admin_level").as[Int]
-    tags ← (c --\ "tags").as[Option[Map[String, String]]]
-    typ ← (c --\ "type").as[String]
-    geometry ← getGeometryFromType(typ, c)
-  } yield Boundary(id, name, localname, srid, adminLevel, tags.getOrElse(Map()), geometry))
 
-  implicit def BoundariesDecodeJson:DecodeJson[Boundaries] = jdecode1L(Boundaries.apply)("boundaries")
+  implicit lazy val  BoundaryDecodeJson = new Decoder[Boundary] {
+      override def apply(c: HCursor): Result[Boundary] = for {
+      id ← c.get[Int]("id")
+      name ← c.get[String]("name")
+      localname ← c.get[String]("localname")
+      srid ← c.get[String]("SRID")
+      adminLevel ← c.get[Int]("admin_level")
+      tags ← c.get[Option[Map[String, String]]]("tags")
+      typ ← c.get[String]("type")
+      geometry ← getGeometryFromType(typ, c)
+    } yield Boundary(id, name, localname, srid, adminLevel, tags.getOrElse(Map()), geometry)
+  }
+
+  def parseBoundary(s: String) = parser.parse(s).flatMap(_.as[Boundary])
+
+  implicit lazy val BoundariesDecodeJson: Decoder[Boundaries] = Decoder.forProduct1("boundaries")(Boundaries.apply)
 
   def boundaryToFeature(b:Boundary):Feature = {
     import OsmPropertyNames._

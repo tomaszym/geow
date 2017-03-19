@@ -1,7 +1,5 @@
 package io.plasmap.parser.test
 
-import argonaut.Argonaut._
-import argonaut._
 import io.plasmap.serializer.GeoJsonSerialiser
 import io.plasmap.model.geometry.FeatureCollection
 import io.plasmap.parser.impl.OsmGeoJSONParser
